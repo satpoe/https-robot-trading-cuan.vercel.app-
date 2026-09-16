@@ -268,18 +268,6 @@
       <div class="topbar"><div><h1>Pengaturan Robot</h1><p>Atur tampilan, instrumen, strategi, timeframe, dan batas posisi.</p></div></div>
       <div class="card"><div class="card-head"><h2>Risk & Strategy</h2></div><div class="card-body">
         <div class="settings">
-          <div class="field" style="grid-column:1/-1">
-            <label>Akun Trading</label>
-            <input id="tradingLogin" type="text" inputmode="numeric" placeholder="Masukkan nomor akun trading">
-          </div>
-          <div class="field">
-            <label>Password Trading</label>
-            <input id="tradingPassword" type="password" placeholder="Masukkan password trading">
-          </div>
-          <div class="field">
-            <label>Server Broker</label>
-            <input id="tradingServer" type="text" placeholder="Contoh: Broker-Live / Broker-Demo">
-          </div>
           <div class="field">
             <label>Tampilan</label>
             <select id="themeSelect">
@@ -342,10 +330,8 @@
           <div class="field"><label>TP ATR Multiplier</label><input id="tpAtr" value="3" type="number" step="0.1"></div>
         </div>
         <br>
-        <div class="notice">Akun, server, dan password di bawah hanya disimpan untuk kebutuhan tampilan lokal. File HTML ini belum dapat terhubung langsung ke MT5/broker atau menjalankan order nyata tanpa backend/API. Untuk keamanan, password tidak disimpan ke localStorage.</div>
-        <div class="setting-summary" id="accountSummary">Belum ada akun trading yang dimasukkan.</div>
+        <div class="notice">Dashboard ini adalah frontend. Untuk data broker yang benar-benar live dan eksekusi order, diperlukan koneksi backend/API ke MT5 atau broker. Jangan memasukkan password akun trading ke file HTML ini.</div>
         <br><button class="btn primary" id="saveSettings">Simpan Pengaturan</button>
-        <button class="btn" id="clearTradingAccount" type="button">Hapus Akun</button>
       </div></div>
     </section>
   </main>
@@ -516,8 +502,7 @@
   const settingIds = [
     "themeSelect","modeSelect","assetSelect","strategySelect","timeframeSelect",
     "maxPositions","maxGoldPositions","maxBtcPositions",
-    "emaFast","emaSlow","rsiPeriod","riskInput","slAtr","tpAtr",
-    "tradingLogin","tradingServer"
+    "emaFast","emaSlow","rsiPeriod","riskInput","slAtr","tpAtr"
   ];
 
   function loadSettings(){
@@ -530,19 +515,6 @@
     document.getElementById("modeText").textContent=document.getElementById("modeSelect").value;
     const tf=document.getElementById("timeframeSelect").value;
     document.getElementById("chartInfo").textContent=tf;
-    updateAccountSummary();
-  }
-
-  function updateAccountSummary(){
-    const login=document.getElementById("tradingLogin").value.trim();
-    const server=document.getElementById("tradingServer").value.trim();
-    const mode=document.getElementById("modeSelect").value;
-    const summary=document.getElementById("accountSummary");
-    if(login){
-      summary.innerHTML="Akun: <b>"+login+"</b> • Server: <b>"+(server||"Belum diisi")+"</b> • Mode: <b>"+mode+"</b><br>Status koneksi: <b class="yellow">Belum terhubung ke broker</b>";
-    }else{
-      summary.textContent="Belum ada akun trading yang dimasukkan.";
-    }
   }
 
   function applyTheme(){
@@ -564,19 +536,6 @@
 
   document.getElementById("timeframeSelect").addEventListener("change",e=>{
     document.getElementById("chartInfo").textContent=e.target.value;
-  });
-
-  document.getElementById("tradingLogin").addEventListener("input",updateAccountSummary);
-  document.getElementById("tradingServer").addEventListener("input",updateAccountSummary);
-
-  document.getElementById("clearTradingAccount").addEventListener("click",()=>{
-    document.getElementById("tradingLogin").value="";
-    document.getElementById("tradingServer").value="";
-    document.getElementById("tradingPassword").value="";
-    localStorage.removeItem("robot_tradingLogin");
-    localStorage.removeItem("robot_tradingServer");
-    updateAccountSummary();
-    toast("Data akun trading dihapus.");
   });
 
   document.getElementById("saveSettings").addEventListener("click",()=>{
