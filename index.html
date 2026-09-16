@@ -383,8 +383,6 @@ button.btn.blue{
   background:rgba(107,44,44,.08);
 }
 
-/* INSTRUMENT CARDS */
-
 .instrument-card{
   display:none;
   position:relative;
@@ -431,26 +429,6 @@ button.btn.blue{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
 }
-
-.instrument-box{
-  background:rgba(255,255,255,.035);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
-}
-
-.instrument-box small{
-  display:block;
-  color:var(--muted);
-  margin-bottom:5px;
-  font-size:11px;
-}
-
-.instrument-box strong{
-  font-size:17px;
-}
-
-/* THEME BUTTON */
 
 .theme-buttons{
   display:flex;
@@ -516,8 +494,6 @@ th{
   padding:25px;
 }
 
-/* LIGHT */
-
 body.light{
   --bg:#f1f5f9;
   --card:#fff;
@@ -535,7 +511,6 @@ body.light select{
 }
 
 body.light .switch-card,
-body.light .instrument-box,
 body.light .item,
 body.light .theme-btn{
   background:#f8fafc;
@@ -616,7 +591,6 @@ body.light .theme-btn{
 
 <div class="app">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
 
   <div class="logo">
@@ -661,8 +635,6 @@ body.light .theme-btn{
 </header>
 
 <div class="container">
-
-<!-- ================= DASHBOARD ================= -->
 
 <section id="dashboard" class="page active">
 
@@ -822,8 +794,6 @@ body.light .theme-btn{
 
 </section>
 
-<!-- ================= POSITIONS ================= -->
-
 <section id="positions" class="page">
 
   <h2>Posisi Terbuka</h2>
@@ -858,8 +828,6 @@ body.light .theme-btn{
 
 </section>
 
-<!-- ================= HISTORY ================= -->
-
 <section id="history" class="page">
 
   <h2>Riwayat Trading</h2>
@@ -874,8 +842,6 @@ body.light .theme-btn{
 
 </section>
 
-<!-- ================= SETTINGS ================= -->
-
 <section id="settings" class="page">
 
   <h2>Pengaturan Robot</h2>
@@ -883,8 +849,6 @@ body.light .theme-btn{
   <p class="muted">
     Atur akun, instrumen dan parameter robot dari satu tempat.
   </p>
-
-  <!-- AKUN -->
 
   <div class="card compact">
 
@@ -935,8 +899,6 @@ body.light .theme-btn{
 
   </div>
 
-  <!-- ROBOT -->
-
   <div class="card compact" id="robotMasterCard">
 
     <h3>🤖 Robot Trading</h3>
@@ -967,8 +929,6 @@ body.light .theme-btn{
     </div>
 
   </div>
-
-  <!-- INSTRUMENT -->
 
   <div class="card compact">
 
@@ -1024,8 +984,6 @@ body.light .theme-btn{
 
   </div>
 
-  <!-- XAU SETTINGS -->
-
   <div
     class="card compact instrument-card xau"
     id="xauSettings"
@@ -1074,8 +1032,6 @@ body.light .theme-btn{
 
   </div>
 
-  <!-- BTC SETTINGS -->
-
   <div
     class="card compact instrument-card btc"
     id="btcSettings"
@@ -1123,8 +1079,6 @@ body.light .theme-btn{
     </div>
 
   </div>
-
-  <!-- STRATEGY -->
 
   <div class="card compact">
 
@@ -1230,8 +1184,6 @@ body.light .theme-btn{
 
   </div>
 
-  <!-- THEME -->
-
   <div class="card compact">
 
     <h3>🎨 Tampilan</h3>
@@ -1259,8 +1211,6 @@ body.light .theme-btn{
     </div>
 
   </div>
-
-  <!-- SAVE -->
 
   <div class="card compact">
 
@@ -1347,6 +1297,16 @@ function setChecked(id,value){
   if($(id)){
     $(id).checked = Boolean(value);
   }
+
+}
+
+function status(text,type=""){
+
+  $("saveStatus").textContent = text;
+
+  $("saveStatus").className =
+    "status" +
+    (type ? " " + type : "");
 
 }
 
@@ -1707,16 +1667,170 @@ function getPayload(){
 
 
 /* =========================================================
+   CARI / BUAT TRADING ACCOUNT
+========================================================= */
+
+async function getTradingAccount(){
+
+  const loginId =
+    val("tradingAccountId").trim();
+
+  const server =
+    val("tradingServer").trim();
+
+  if(!loginId){
+
+    throw new Error(
+      "ID Akun MT5 belum diisi."
+    );
+
+  }
+
+
+  /*
+    Cari akun berdasarkan login_id.
+  */
+
+  let q =
+    await db
+      .from("trading_accounts")
+      .select("*")
+      .eq("login_id",loginId)
+      .limit(1);
+
+
+  if(q.error){
+
+    throw new Error(
+      "Gagal mencari akun MT5: " +
+      q.error.message
+    );
+
+  }
+
+
+  /*
+    Kalau akun sudah ada,
+    update server/platform/status.
+  */
+
+  if(q.data && q.data.length){
+
+    const account =
+      q.data[0];
+
+
+    const updateData = {
+
+      nama_akun:
+        account.nama_akun ||
+        "Akun MT5 " + loginId,
+
+      platform:
+        account.platform ||
+        "MT5",
+
+      server:
+        server ||
+        account.server ||
+        null,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const u =
+      await db
+        .from("trading_accounts")
+        .update(updateData)
+        .eq(
+          "id",
+          account.id
+        )
+        .select("*")
+        .single();
+
+
+    if(u.error){
+
+      throw new Error(
+        "Gagal memperbarui akun MT5: " +
+        u.error.message
+      );
+
+    }
+
+
+    return u.data;
+
+  }
+
+
+  /*
+    Kalau belum ada,
+    buat akun baru.
+  */
+
+  const insertData = {
+
+    nama_akun:
+      "Akun MT5 " + loginId,
+
+    platform:
+      "MT5",
+
+    broker:
+      null,
+
+    login_id:
+      loginId,
+
+    server:
+      server || null,
+
+    status:
+      "disconnected",
+
+    robot_aktif:
+      false
+
+  };
+
+
+  const i =
+    await db
+      .from("trading_accounts")
+      .insert(insertData)
+      .select("*")
+      .single();
+
+
+  if(i.error){
+
+    throw new Error(
+      "Gagal membuat akun MT5: " +
+      i.error.message
+    );
+
+  }
+
+
+  return i.data;
+
+}
+
+
+/* =========================================================
    LOAD SETTINGS
 ========================================================= */
 
 async function loadSettings(){
 
-  $("saveStatus").textContent =
-    "Membaca pengaturan...";
-
-  $("saveStatus").className =
-    "status";
+  status(
+    "Membaca pengaturan..."
+  );
 
 
   const r =
@@ -1732,12 +1846,11 @@ async function loadSettings(){
 
   if(r.error){
 
-    $("saveStatus").textContent =
+    status(
       "Gagal membaca pengaturan: " +
-      r.error.message;
-
-    $("saveStatus").className =
-      "status err";
+      r.error.message,
+      "err"
+    );
 
     return;
 
@@ -1746,11 +1859,10 @@ async function loadSettings(){
 
   if(!r.data || !r.data.length){
 
-    $("saveStatus").textContent =
-      "Belum ada pengaturan tersimpan.";
-
-    $("saveStatus").className =
-      "status warn";
+    status(
+      "Belum ada pengaturan tersimpan.",
+      "warn"
+    );
 
     updateAllVisual();
 
@@ -1852,11 +1964,10 @@ async function loadSettings(){
   updateAllVisual();
 
 
-  $("saveStatus").textContent =
-    "✓ Pengaturan berhasil dimuat.";
-
-  $("saveStatus").className =
-    "status ok";
+  status(
+    "✓ Pengaturan berhasil dimuat.",
+    "ok"
+  );
 
 }
 
@@ -1867,145 +1978,203 @@ async function loadSettings(){
 
 async function saveSettings(){
 
-  const payload =
-    getPayload();
+  try{
+
+    status(
+      "Mencari akun MT5..."
+    );
 
 
-  $("saveStatus").textContent =
-    "Menyimpan pengaturan...";
+    const payload =
+      getPayload();
 
-  $("saveStatus").className =
-    "status";
-
-
-  /*
-    Cari record robot yang sudah ada.
-  */
-
-  const q =
-    await db
-      .from("robot_settings")
-      .select("id")
-      .order(
-        "updated_at",
-        {ascending:false}
-      )
-      .limit(1);
-
-
-  if(q.error){
-
-    $("saveStatus").textContent =
-      "Gagal mencari pengaturan: " +
-      q.error.message;
-
-    $("saveStatus").className =
-      "status err";
-
-    return;
-
-  }
-
-
-  let r;
-
-
-  if(q.data && q.data.length){
 
     /*
-      Record sudah ada.
-      UPDATE tidak perlu account_id
-      karena UUID record sudah tersedia.
+      Pastikan ID MT5 diisi.
     */
 
-    r =
-      await db
-        .from("robot_settings")
-        .update(payload)
-        .eq(
-          "id",
-          q.data[0].id
-        );
+    if(!payload.trading_account_id){
 
-  }else{
+      status(
+        "ID Akun MT5 wajib diisi.",
+        "err"
+      );
 
-    /*
-      Record belum ada.
-
-      account_id WAJIB karena kolom
-      account_id bertipe UUID dan NOT NULL.
-
-      Kita buat UUID otomatis.
-    */
-
-    let uuid;
-
-    if(
-      window.crypto &&
-      typeof window.crypto.randomUUID === "function"
-    ){
-
-      uuid =
-        window.crypto.randomUUID();
-
-    }else{
-
-      uuid =
-        "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
-        .replace(
-          /[xy]/g,
-          function(c){
-
-            const r =
-              Math.random() * 16 | 0;
-
-            const v =
-              c === "x"
-                ? r
-                : (r & 0x3 | 0x8);
-
-            return v.toString(16);
-
-          }
-        );
+      return;
 
     }
 
 
+    /*
+      Cari atau buat akun di
+      trading_accounts.
+    */
+
+    const account =
+      await getTradingAccount();
+
+
+    if(!account || !account.id){
+
+      throw new Error(
+        "ID database akun MT5 tidak ditemukan."
+      );
+
+    }
+
+
+    status(
+      "Akun ditemukan. Menyimpan pengaturan..."
+    );
+
+
+    /*
+      INI BAGIAN PALING PENTING.
+
+      account.id adalah UUID dari
+      trading_accounts.
+
+      BUKAN UUID acak.
+    */
+
     payload.account_id =
-      uuid;
+      account.id;
 
 
-    r =
+    /*
+      Cari robot_settings yang ada.
+    */
+
+    const q =
       await db
         .from("robot_settings")
-        .insert(payload);
+        .select("id")
+        .eq(
+          "account_id",
+          account.id
+        )
+        .order(
+          "updated_at",
+          {ascending:false}
+        )
+        .limit(1);
 
-  }
+
+    if(q.error){
+
+      throw new Error(
+        "Gagal mencari pengaturan akun: " +
+        q.error.message
+      );
+
+    }
 
 
-  if(r.error){
+    let r;
 
-    $("saveStatus").textContent =
+
+    if(q.data && q.data.length){
+
+      /*
+        UPDATE record yang sudah ada.
+      */
+
+      r =
+        await db
+          .from("robot_settings")
+          .update(payload)
+          .eq(
+            "id",
+            q.data[0].id
+          )
+          .select("*")
+          .single();
+
+    }else{
+
+      /*
+        INSERT baru.
+      */
+
+      r =
+        await db
+          .from("robot_settings")
+          .insert(payload)
+          .select("*")
+          .single();
+
+    }
+
+
+    if(r.error){
+
+      throw new Error(
+        "Gagal menyimpan robot_settings: " +
+        r.error.message
+      );
+
+    }
+
+
+    /*
+      Update status robot pada
+      trading_accounts juga.
+    */
+
+    const accountUpdate =
+      await db
+        .from("trading_accounts")
+        .update({
+
+          server:
+            payload.trading_server ||
+            account.server ||
+            null,
+
+          robot_aktif:
+            payload.robot_on,
+
+          updated_at:
+            new Date().toISOString()
+
+        })
+        .eq(
+          "id",
+          account.id
+        );
+
+
+    if(accountUpdate.error){
+
+      console.warn(
+        "Status akun tidak diperbarui:",
+        accountUpdate.error.message
+      );
+
+    }
+
+
+    updateAllVisual();
+
+
+    status(
+      "✓ Pengaturan berhasil disimpan ke Supabase.",
+      "ok"
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+
+    status(
       "Gagal menyimpan: " +
-      r.error.message;
-
-    $("saveStatus").className =
-      "status err";
-
-    return;
+      (error.message || error),
+      "err"
+    );
 
   }
-
-
-  updateAllVisual();
-
-
-  $("saveStatus").textContent =
-    "✓ Pengaturan berhasil disimpan ke Supabase.";
-
-  $("saveStatus").className =
-    "status ok";
 
 }
 
