@@ -147,6 +147,14 @@ header h2{
   margin-bottom:18px;
 }
 
+.card.compact{
+  padding:16px;
+}
+
+.card h3{
+  margin:0 0 14px;
+}
+
 .account-head{
   display:flex;
   justify-content:space-between;
@@ -192,11 +200,6 @@ header h2{
 .badge.off{
   background:#3b1c1c;
   color:#f87171;
-}
-
-.badge.yellow{
-  background:#493718;
-  color:#fbbf24;
 }
 
 .stats{
@@ -266,10 +269,6 @@ button.btn:hover{
   background:var(--green2);
 }
 
-button.btn.red{
-  background:#991b1b;
-}
-
 button.btn.blue{
   background:#2563eb;
 }
@@ -309,15 +308,14 @@ button.btn.blue{
 .switch-row{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:15px;
-  margin-bottom:18px;
+  gap:12px;
 }
 
 .switch-card{
   background:rgba(255,255,255,.035);
   border:1px solid var(--border);
   border-radius:12px;
-  padding:16px;
+  padding:14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
@@ -337,6 +335,7 @@ button.btn.blue{
   position:relative;
   width:52px;
   height:28px;
+  flex-shrink:0;
 }
 
 .switch input{
@@ -384,6 +383,116 @@ button.btn.blue{
   background:rgba(107,44,44,.08);
 }
 
+/* INSTRUMENT CARDS */
+
+.instrument-card{
+  display:none;
+  position:relative;
+  overflow:hidden;
+}
+
+.instrument-card.show{
+  display:block;
+}
+
+.instrument-card.xau{
+  border-color:#7b5a16;
+}
+
+.instrument-card.btc{
+  border-color:#684317;
+}
+
+.instrument-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:15px;
+}
+
+.instrument-title h3{
+  margin:0;
+}
+
+.instrument-label{
+  font-size:12px;
+  font-weight:bold;
+  padding:6px 10px;
+  border-radius:20px;
+}
+
+.instrument-label.on{
+  background:#173b2c;
+  color:#4ade80;
+}
+
+.instrument-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.instrument-box{
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
+}
+
+.instrument-box small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:5px;
+  font-size:11px;
+}
+
+.instrument-box strong{
+  font-size:17px;
+}
+
+/* THEME BUTTON */
+
+.theme-buttons{
+  display:flex;
+  gap:10px;
+}
+
+.theme-btn{
+  flex:1;
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.035);
+  color:var(--text);
+  padding:12px;
+  border-radius:9px;
+  cursor:pointer;
+  font-weight:bold;
+}
+
+.theme-btn.active{
+  background:var(--green);
+  border-color:var(--green2);
+  color:#fff;
+}
+
+.info{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:15px;
+}
+
+.section-note{
+  color:var(--muted);
+  font-size:12px;
+  margin:-5px 0 15px;
+}
+
+.hidden{
+  display:none !important;
+}
+
 table{
   width:100%;
   border-collapse:collapse;
@@ -407,14 +516,7 @@ th{
   padding:25px;
 }
 
-.info{
-  padding:12px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  color:var(--muted);
-  font-size:13px;
-  margin-top:15px;
-}
+/* LIGHT */
 
 body.light{
   --bg:#f1f5f9;
@@ -430,6 +532,13 @@ body.light header,
 body.light input,
 body.light select{
   background:#fff;
+}
+
+body.light .switch-card,
+body.light .instrument-box,
+body.light .item,
+body.light .theme-btn{
+  background:#f8fafc;
 }
 
 @media(max-width:900px){
@@ -482,7 +591,8 @@ body.light select{
 
   .formgrid,
   .stats,
-  .account-grid{
+  .account-grid,
+  .instrument-grid{
     grid-template-columns:1fr;
   }
 
@@ -536,7 +646,6 @@ body.light select{
 
 </aside>
 
-
 <main class="main">
 
 <header>
@@ -551,9 +660,7 @@ body.light select{
 
 </header>
 
-
 <div class="container">
-
 
 <!-- ================= DASHBOARD ================= -->
 
@@ -564,9 +671,6 @@ body.light select{
   <p class="muted">
     Panel kontrol robot trading MT5.
   </p>
-
-
-  <!-- AKUN -->
 
   <div class="card">
 
@@ -587,7 +691,6 @@ body.light select{
       </span>
 
     </div>
-
 
     <div class="account-grid">
 
@@ -615,9 +718,6 @@ body.light select{
 
   </div>
 
-
-  <!-- STATS -->
-
   <div class="stats">
 
     <div class="stat">
@@ -642,9 +742,6 @@ body.light select{
 
   </div>
 
-
-  <!-- ROBOT STATUS -->
-
   <div class="card">
 
     <div class="account-head">
@@ -655,7 +752,7 @@ body.light select{
         </h3>
 
         <span class="muted">
-          Pengaturan dibaca dari Supabase.
+          Pengaturan robot dari Supabase.
         </span>
       </div>
 
@@ -664,7 +761,6 @@ body.light select{
       </span>
 
     </div>
-
 
     <div class="account-grid">
 
@@ -692,9 +788,6 @@ body.light select{
 
   </div>
 
-
-  <!-- XAU BTC -->
-
   <div class="switch-row">
 
     <div class="switch-card">
@@ -705,16 +798,11 @@ body.light select{
       </div>
 
       <label class="switch">
-        <input
-          type="checkbox"
-          id="dashXau"
-          disabled
-        >
+        <input type="checkbox" id="dashXau" disabled>
         <span class="slider"></span>
       </label>
 
     </div>
-
 
     <div class="switch-card">
 
@@ -724,11 +812,7 @@ body.light select{
       </div>
 
       <label class="switch">
-        <input
-          type="checkbox"
-          id="dashBtc"
-          disabled
-        >
+        <input type="checkbox" id="dashBtc" disabled>
         <span class="slider"></span>
       </label>
 
@@ -737,7 +821,6 @@ body.light select{
   </div>
 
 </section>
-
 
 <!-- ================= POSITIONS ================= -->
 
@@ -775,7 +858,6 @@ body.light select{
 
 </section>
 
-
 <!-- ================= HISTORY ================= -->
 
 <section id="history" class="page">
@@ -792,7 +874,6 @@ body.light select{
 
 </section>
 
-
 <!-- ================= SETTINGS ================= -->
 
 <section id="settings" class="page">
@@ -800,23 +881,20 @@ body.light select{
   <h2>Pengaturan Robot</h2>
 
   <p class="muted">
-    Pengaturan di halaman ini disimpan ke Supabase dan nantinya dibaca oleh EA MT5.
+    Atur akun, instrumen dan parameter robot dari satu tempat.
   </p>
-
 
   <!-- AKUN -->
 
-  <div class="card">
+  <div class="card compact">
 
-    <h3>💼 Akun Trading</h3>
+    <h3>💼 Akun MT5</h3>
 
     <div class="formgrid">
 
       <div class="form">
 
-        <label>
-          ID Akun MT5
-        </label>
+        <label>ID Akun MT5</label>
 
         <input
           id="tradingAccountId"
@@ -825,12 +903,9 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          Server MT5
-        </label>
+        <label>Server MT5</label>
 
         <input
           id="tradingServer"
@@ -839,22 +914,14 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          Mode Akun
-        </label>
+        <label>Mode Akun</label>
 
         <select id="modeSelect">
 
-          <option value="DEMO">
-            DEMO
-          </option>
-
-          <option value="LIVE">
-            LIVE
-          </option>
+          <option value="DEMO">DEMO</option>
+          <option value="LIVE">LIVE</option>
 
         </select>
 
@@ -863,25 +930,22 @@ body.light select{
     </div>
 
     <div class="info">
-      🔒 Password akun MT5 tidak disimpan di panel ini. Login MT5 tetap dilakukan langsung di aplikasi MetaTrader 5.
+      🔒 Password MT5 tidak disimpan di panel. Login MT5 tetap dilakukan langsung di MetaTrader 5.
     </div>
 
   </div>
 
+  <!-- ROBOT -->
 
-  <!-- MASTER ROBOT -->
+  <div class="card compact" id="robotMasterCard">
 
-  <div class="card" id="robotMasterCard">
+    <h3>🤖 Robot Trading</h3>
 
-    <h3>🤖 Kontrol Robot</h3>
-
-    <div class="switch-card robot-master" style="margin-top:15px">
+    <div class="switch-card robot-master">
 
       <div class="switch-info">
 
-        <strong>
-          Robot Trading
-        </strong>
+        <strong>Robot</strong>
 
         <span id="robotText">
           Robot dalam keadaan OFF
@@ -904,25 +968,23 @@ body.light select{
 
   </div>
 
+  <!-- INSTRUMENT -->
 
-  <!-- SYMBOL -->
+  <div class="card compact">
 
-  <div class="card">
+    <h3>📈 Instrumen</h3>
 
-    <h3>📈 Instrumen Trading</h3>
+    <p class="section-note">
+      Aktifkan instrumen yang ingin digunakan robot.
+    </p>
 
     <div class="switch-row">
 
       <div class="switch-card">
 
         <div class="switch-info">
-
           <strong>🥇 XAUUSD</strong>
-
-          <span>
-            Aktifkan trading emas
-          </span>
-
+          <span id="xauSwitchText">OFF</span>
         </div>
 
         <label class="switch">
@@ -938,17 +1000,11 @@ body.light select{
 
       </div>
 
-
       <div class="switch-card">
 
         <div class="switch-info">
-
           <strong>₿ BTCUSD</strong>
-
-          <span>
-            Aktifkan trading Bitcoin
-          </span>
-
+          <span id="btcSwitchText">OFF</span>
         </div>
 
         <label class="switch">
@@ -968,75 +1024,28 @@ body.light select{
 
   </div>
 
+  <!-- XAU SETTINGS -->
 
-  <!-- TRADING -->
+  <div
+    class="card compact instrument-card xau"
+    id="xauSettings"
+  >
 
-  <div class="card">
+    <div class="instrument-title">
 
-    <h3>⚙️ Pengaturan Trading</h3>
+      <h3>🥇 Pengaturan XAUUSD</h3>
 
-    <div class="formgrid">
+      <span class="instrument-label on">
+        AKTIF
+      </span>
 
+    </div>
 
-      <div class="form">
-
-        <label>
-          Strategi
-        </label>
-
-        <select id="strategySelect">
-
-          <option value="Normal">
-            Normal
-          </option>
-
-          <option value="Scalping">
-            Scalping
-          </option>
-
-        </select>
-
-      </div>
-
+    <div class="instrument-grid">
 
       <div class="form">
 
-        <label>
-          Timeframe
-        </label>
-
-        <select id="timeframeSelect">
-
-          <option value="M1">
-            M1
-          </option>
-
-          <option value="M5" selected>
-            M5
-          </option>
-
-          <option value="M15">
-            M15
-          </option>
-
-          <option value="M30">
-            M30
-          </option>
-
-          <option value="H1">
-            H1
-          </option>
-
-        </select>
-
-      </div>
-
-
-      <div class="form">
-
-        <label>
-          Lot XAUUSD
-        </label>
+        <label>Lot XAUUSD</label>
 
         <input
           id="lotXau"
@@ -1048,12 +1057,45 @@ body.light select{
 
       </div>
 
+      <div class="form">
+
+        <label>Maksimal Posisi XAU</label>
+
+        <input
+          id="maxGoldPositions"
+          type="number"
+          min="1"
+          value="1"
+        >
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- BTC SETTINGS -->
+
+  <div
+    class="card compact instrument-card btc"
+    id="btcSettings"
+  >
+
+    <div class="instrument-title">
+
+      <h3>₿ Pengaturan BTCUSD</h3>
+
+      <span class="instrument-label on">
+        AKTIF
+      </span>
+
+    </div>
+
+    <div class="instrument-grid">
 
       <div class="form">
 
-        <label>
-          Lot BTCUSD
-        </label>
+        <label>Lot BTCUSD</label>
 
         <input
           id="lotBtc"
@@ -1065,44 +1107,9 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          Maksimal Posisi
-        </label>
-
-        <input
-          id="maxPositions"
-          type="number"
-          min="1"
-          value="1"
-        >
-
-      </div>
-
-
-      <div class="form">
-
-        <label>
-          Maks Posisi XAU
-        </label>
-
-        <input
-          id="maxGoldPositions"
-          type="number"
-          min="1"
-          value="1"
-        >
-
-      </div>
-
-
-      <div class="form">
-
-        <label>
-          Maks Posisi BTC
-        </label>
+        <label>Maksimal Posisi BTC</label>
 
         <input
           id="maxBtcPositions"
@@ -1113,12 +1120,50 @@ body.light select{
 
       </div>
 
+    </div>
+
+  </div>
+
+  <!-- STRATEGY -->
+
+  <div class="card compact">
+
+    <h3>⚙️ Strategi Robot</h3>
+
+    <div class="formgrid">
 
       <div class="form">
 
-        <label>
-          EMA Cepat
-        </label>
+        <label>Strategi</label>
+
+        <select id="strategySelect">
+
+          <option value="Normal">Normal</option>
+          <option value="Scalping">Scalping</option>
+
+        </select>
+
+      </div>
+
+      <div class="form">
+
+        <label>Timeframe</label>
+
+        <select id="timeframeSelect">
+
+          <option value="M1">M1</option>
+          <option value="M5" selected>M5</option>
+          <option value="M15">M15</option>
+          <option value="M30">M30</option>
+          <option value="H1">H1</option>
+
+        </select>
+
+      </div>
+
+      <div class="form">
+
+        <label>EMA Cepat</label>
 
         <input
           id="emaFast"
@@ -1129,12 +1174,9 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          EMA Lambat
-        </label>
+        <label>EMA Lambat</label>
 
         <input
           id="emaSlow"
@@ -1145,12 +1187,9 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          Stop Loss Points
-        </label>
+        <label>Stop Loss Points</label>
 
         <input
           id="stopLossPoints"
@@ -1161,12 +1200,9 @@ body.light select{
 
       </div>
 
-
       <div class="form">
 
-        <label>
-          Take Profit Points
-        </label>
+        <label>Take Profit Points</label>
 
         <input
           id="takeProfitPoints"
@@ -1177,41 +1213,56 @@ body.light select{
 
       </div>
 
-    </div>
-
-  </div>
-
-
-  <!-- TAMPILAN -->
-
-  <div class="card">
-
-    <h3>🎨 Tampilan</h3>
-
-    <div class="formgrid">
-
       <div class="form">
 
-        <label>
-          Tampilan
-        </label>
+        <label>Maksimal Posisi Total</label>
 
-        <select id="themeSelect">
-
-          <option value="dark">
-            Mode Gelap
-          </option>
-
-          <option value="light">
-            Mode Terang
-          </option>
-
-        </select>
+        <input
+          id="maxPositions"
+          type="number"
+          min="1"
+          value="1"
+        >
 
       </div>
 
     </div>
 
+  </div>
+
+  <!-- THEME -->
+
+  <div class="card compact">
+
+    <h3>🎨 Tampilan</h3>
+
+    <div class="theme-buttons">
+
+      <button
+        type="button"
+        class="theme-btn"
+        id="darkThemeBtn"
+        onclick="setTheme('dark')"
+      >
+        🌙 Gelap
+      </button>
+
+      <button
+        type="button"
+        class="theme-btn"
+        id="lightThemeBtn"
+        onclick="setTheme('light')"
+      >
+        ☀️ Terang
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- SAVE -->
+
+  <div class="card compact">
 
     <div class="actions">
 
@@ -1222,7 +1273,6 @@ body.light select{
         💾 Simpan Pengaturan
       </button>
 
-
       <button
         class="btn blue"
         onclick="loadSettings()"
@@ -1231,7 +1281,6 @@ body.light select{
       </button>
 
     </div>
-
 
     <div
       id="saveStatus"
@@ -1249,7 +1298,6 @@ body.light select{
 </main>
 
 </div>
-
 
 <script>
 
@@ -1278,36 +1326,26 @@ function $(id){
   return document.getElementById(id);
 }
 
-
 function val(id){
   return $(id)?.value ?? "";
 }
 
-
 function setv(id,value){
 
   if($(id) && value !== null && value !== undefined){
-
     $(id).value = value;
-
   }
 
 }
 
-
 function checked(id){
-
   return $(id)?.checked || false;
-
 }
-
 
 function setChecked(id,value){
 
   if($(id)){
-
     $(id).checked = Boolean(value);
-
   }
 
 }
@@ -1327,7 +1365,6 @@ function page(id,button){
 
   $(id).classList.add("active");
 
-
   document
     .querySelectorAll(".nav")
     .forEach(x =>
@@ -1336,19 +1373,14 @@ function page(id,button){
 
   button.classList.add("active");
 
-
   const titles = {
 
     dashboard:"Dashboard Utama",
-
     positions:"Posisi Terbuka",
-
     history:"Riwayat Trading",
-
     settings:"Pengaturan Robot"
 
   };
-
 
   $("title").textContent =
     titles[id];
@@ -1360,12 +1392,93 @@ function page(id,button){
    THEME
 ========================================================= */
 
-function theme(){
+function setTheme(mode){
 
   document.body.classList.toggle(
     "light",
-    val("themeSelect") === "light"
+    mode === "light"
   );
+
+  localStorage.setItem(
+    "robot_theme",
+    mode
+  );
+
+  updateThemeButtons();
+
+}
+
+
+function theme(){
+
+  const saved =
+    localStorage.getItem("robot_theme") || "dark";
+
+  document.body.classList.toggle(
+    "light",
+    saved === "light"
+  );
+
+  updateThemeButtons();
+
+}
+
+
+function updateThemeButtons(){
+
+  const light =
+    document.body.classList.contains("light");
+
+  $("lightThemeBtn")?.classList.toggle(
+    "active",
+    light
+  );
+
+  $("darkThemeBtn")?.classList.toggle(
+    "active",
+    !light
+  );
+
+}
+
+
+/* =========================================================
+   INSTRUMENT VISUAL
+========================================================= */
+
+function updateInstrumentSettings(){
+
+  const xau =
+    checked("tradeXau");
+
+  const btc =
+    checked("tradeBtc");
+
+
+  $("xauSettings")
+    ?.classList.toggle(
+      "show",
+      xau
+    );
+
+
+  $("btcSettings")
+    ?.classList.toggle(
+      "show",
+      btc
+    );
+
+
+  $("xauSwitchText").textContent =
+    xau
+      ? "AKTIF — pengaturan XAUUSD ditampilkan"
+      : "OFF";
+
+
+  $("btcSwitchText").textContent =
+    btc
+      ? "AKTIF — pengaturan BTCUSD ditampilkan"
+      : "OFF";
 
 }
 
@@ -1379,10 +1492,8 @@ function updateRobotVisual(){
   const on =
     checked("robotOn");
 
-
   const card =
     $("robotMasterCard");
-
 
   if(on){
 
@@ -1403,6 +1514,10 @@ function updateRobotVisual(){
 }
 
 
+/* =========================================================
+   DASHBOARD VISUAL
+========================================================= */
+
 function updateDashboardSettings(){
 
   const xau =
@@ -1418,16 +1533,14 @@ function updateDashboardSettings(){
   $("dMode").textContent =
     val("modeSelect") || "DEMO";
 
-
   $("dTf").textContent =
     val("timeframeSelect") || "M5";
-
 
   $("dStrategy").textContent =
     val("strategySelect") || "Normal";
 
 
-  const assets=[];
+  const assets = [];
 
   if(xau)
     assets.push("XAUUSD");
@@ -1477,19 +1590,27 @@ function updateDashboardSettings(){
     " MODE";
 
 
-  $("robotState").textContent =
-    robot
-      ? "● Robot ON"
-      : "● Robot OFF";
+  if(robot){
+
+    $("robotState").textContent =
+      "● Robot ON";
+
+  }
 
 }
 
+
+/* =========================================================
+   UPDATE SEMUA
+========================================================= */
 
 function updateAllVisual(){
 
   theme();
 
   updateRobotVisual();
+
+  updateInstrumentSettings();
 
   updateDashboardSettings();
 
@@ -1501,6 +1622,25 @@ function updateAllVisual(){
 ========================================================= */
 
 function getPayload(){
+
+  const xau =
+    checked("tradeXau");
+
+  const btc =
+    checked("tradeBtc");
+
+
+  let asset = "";
+
+  if(xau)
+    asset = "XAUUSD";
+
+  if(btc)
+    asset +=
+      asset
+        ? ",BTCUSD"
+        : "BTCUSD";
+
 
   return {
 
@@ -1517,28 +1657,13 @@ function getPayload(){
       checked("robotOn"),
 
     trade_xau:
-      checked("tradeXau"),
+      xau,
 
     trade_btc:
-      checked("tradeBtc"),
+      btc,
 
     asset:
-      (
-        checked("tradeXau")
-          ? "XAUUSD"
-          : ""
-      ) +
-      (
-        checked("tradeXau") &&
-        checked("tradeBtc")
-          ? ","
-          : ""
-      ) +
-      (
-        checked("tradeBtc")
-          ? "BTCUSD"
-          : ""
-      ),
+      asset,
 
     strategy:
       val("strategySelect") || "Normal",
@@ -1590,6 +1715,9 @@ async function loadSettings(){
   $("saveStatus").textContent =
     "Membaca pengaturan...";
 
+  $("saveStatus").className =
+    "status";
+
 
   const r =
     await db
@@ -1640,96 +1768,80 @@ async function loadSettings(){
     x.trading_account_id
   );
 
-
   setv(
     "tradingServer",
     x.trading_server
   );
-
 
   setv(
     "modeSelect",
     x.mode || "DEMO"
   );
 
-
   setChecked(
     "robotOn",
     x.robot_on
   );
-
 
   setChecked(
     "tradeXau",
     x.trade_xau
   );
 
-
   setChecked(
     "tradeBtc",
     x.trade_btc
   );
-
 
   setv(
     "strategySelect",
     x.strategy || "Normal"
   );
 
-
   setv(
     "timeframeSelect",
     x.timeframe || "M5"
   );
-
 
   setv(
     "maxPositions",
     x.max_positions ?? 1
   );
 
-
   setv(
     "maxGoldPositions",
     x.max_gold_positions ?? 1
   );
-
 
   setv(
     "maxBtcPositions",
     x.max_btc_positions ?? 1
   );
 
-
   setv(
     "lotXau",
     x.lot_xau ?? 0.01
   );
-
 
   setv(
     "lotBtc",
     x.lot_btc ?? 0.01
   );
 
-
   setv(
     "emaFast",
     x.ema_fast ?? 9
   );
-
 
   setv(
     "emaSlow",
     x.ema_slow ?? 21
   );
 
-
   setv(
     "stopLossPoints",
     x.stop_loss_points ?? 1000
   );
-
 
   setv(
     "takeProfitPoints",
@@ -1767,9 +1879,7 @@ async function saveSettings(){
 
 
   /*
-    Ambil record terakhir.
-    Kalau ada → UPDATE.
-    Kalau belum ada → INSERT.
+    Cari record robot yang sudah ada.
   */
 
   const q =
@@ -1802,6 +1912,12 @@ async function saveSettings(){
 
   if(q.data && q.data.length){
 
+    /*
+      Record sudah ada.
+      UPDATE tidak perlu account_id
+      karena UUID record sudah tersedia.
+    */
+
     r =
       await db
         .from("robot_settings")
@@ -1812,6 +1928,53 @@ async function saveSettings(){
         );
 
   }else{
+
+    /*
+      Record belum ada.
+
+      account_id WAJIB karena kolom
+      account_id bertipe UUID dan NOT NULL.
+
+      Kita buat UUID otomatis.
+    */
+
+    let uuid;
+
+    if(
+      window.crypto &&
+      typeof window.crypto.randomUUID === "function"
+    ){
+
+      uuid =
+        window.crypto.randomUUID();
+
+    }else{
+
+      uuid =
+        "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx"
+        .replace(
+          /[xy]/g,
+          function(c){
+
+            const r =
+              Math.random() * 16 | 0;
+
+            const v =
+              c === "x"
+                ? r
+                : (r & 0x3 | 0x8);
+
+            return v.toString(16);
+
+          }
+        );
+
+    }
+
+
+    payload.account_id =
+      uuid;
+
 
     r =
       await db
@@ -1897,14 +2060,11 @@ async function loadAccountStatus(){
   $("dLogin").textContent =
     x.account_login || "-";
 
-
   $("dServer").textContent =
     x.server || "-";
 
-
   $("dCurrency").textContent =
     x.currency || "-";
-
 
   $("dTrade").textContent =
     x.trade_allowed
@@ -1969,11 +2129,6 @@ async function loadAccountStatus(){
     last.toLocaleString("id-ID");
 
 
-  /*
-    Status header tetap menunjukkan
-    apakah MT5 terhubung.
-  */
-
   $("robotState").textContent =
     online
       ? "● MT5 Terhubung"
@@ -1986,36 +2141,46 @@ async function loadAccountStatus(){
    EVENT
 ========================================================= */
 
-$("themeSelect")
+$("robotOn")
   .addEventListener(
     "change",
-    theme
+    updateAllVisual
   );
 
 
-[
-  "robotOn",
-  "tradeXau",
-  "tradeBtc",
-  "modeSelect",
-  "assetSelect",
-  "strategySelect",
-  "timeframeSelect",
-  "lotXau",
-  "lotBtc"
-]
-.forEach(id => {
+$("tradeXau")
+  .addEventListener(
+    "change",
+    updateAllVisual
+  );
 
-  if($(id)){
 
-    $(id).addEventListener(
-      "change",
-      updateAllVisual
-    );
+$("tradeBtc")
+  .addEventListener(
+    "change",
+    updateAllVisual
+  );
 
-  }
 
-});
+$("modeSelect")
+  .addEventListener(
+    "change",
+    updateAllVisual
+  );
+
+
+$("strategySelect")
+  .addEventListener(
+    "change",
+    updateAllVisual
+  );
+
+
+$("timeframeSelect")
+  .addEventListener(
+    "change",
+    updateAllVisual
+  );
 
 
 /* =========================================================
