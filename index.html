@@ -3,719 +3,342 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Trading Robot Dashboard</title>
+
+<title>Trading Robot Dashboard - Exness MT5</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+
 :root{
-  --green:#176b52;
-  --green2:#218565;
-  --bg:#0f1720;
-  --card:#17212b;
-  --card2:#1d2a35;
-  --text:#f1f5f9;
-  --muted:#94a3b8;
-  --border:#2c3b49;
-  --red:#ef4444;
-  --yellow:#f59e0b;
-  --blue:#3b82f6;
-  --shadow:0 10px 30px rgba(0,0,0,.18);
+--bg:#0f1720;
+--card:#17212b;
+--text:#f1f5f9;
+--muted:#94a3b8;
+--border:#2c3b49;
+--green:#176b52;
+--green2:#218565;
+--red:#ef4444;
 }
 
-*{box-sizing:border-box}
+*{
+box-sizing:border-box;
+}
 
 body{
-  margin:0;
-  font-family:Arial,Helvetica,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-}
-
-button,input,select{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
+margin:0;
+font-family:Arial,sans-serif;
+background:var(--bg);
+color:var(--text);
 }
 
 .app{
-  display:flex;
-  min-height:100vh;
+display:flex;
+min-height:100vh;
 }
 
-/* SIDEBAR */
 .sidebar{
-  width:250px;
-  background:#111b24;
-  border-right:1px solid var(--border);
-  padding:20px 14px;
-  position:fixed;
-  left:0;
-  top:0;
-  bottom:0;
-  z-index:20;
+width:240px;
+background:#111b24;
+border-right:1px solid var(--border);
+padding:20px 14px;
+position:fixed;
+inset:0 auto 0 0;
 }
 
 .logo{
-  padding:8px 10px 22px;
-  border-bottom:1px solid var(--border);
-  margin-bottom:18px;
+padding:8px 10px 22px;
+border-bottom:1px solid var(--border);
+margin-bottom:18px;
 }
 
 .logo h2{
-  margin:0;
-  color:#fff;
-  font-size:20px;
+margin:0;
 }
 
 .logo small{
-  color:var(--muted);
-  display:block;
-  margin-top:5px;
+color:var(--muted);
 }
 
-.menu-title{
-  color:#64748b;
-  font-size:11px;
-  text-transform:uppercase;
-  margin:18px 10px 8px;
+.nav{
+width:100%;
+border:0;
+background:transparent;
+color:#cbd5e1;
+text-align:left;
+padding:12px;
+border-radius:9px;
+margin:3px 0;
+cursor:pointer;
 }
 
-.nav-btn{
-  width:100%;
-  border:0;
-  background:transparent;
-  color:#cbd5e1;
-  text-align:left;
-  padding:12px 13px;
-  border-radius:9px;
-  margin-bottom:5px;
+.nav:hover,
+.nav.active{
+background:var(--green);
+color:#fff;
 }
 
-.nav-btn:hover,
-.nav-btn.active{
-  background:var(--green);
-  color:white;
+.mode{
+position:absolute;
+bottom:18px;
+left:14px;
+right:14px;
+text-align:center;
+padding:9px;
+border:1px solid #285846;
+border-radius:8px;
+color:#6ee7b7;
 }
 
-.sidebar-bottom{
-  position:absolute;
-  left:14px;
-  right:14px;
-  bottom:18px;
-}
-
-.mode-badge{
-  background:#172b24;
-  color:#6ee7b7;
-  border:1px solid #285846;
-  border-radius:8px;
-  padding:9px;
-  text-align:center;
-  font-size:12px;
-}
-
-/* MAIN */
 .main{
-  margin-left:250px;
-  width:calc(100% - 250px);
-  min-height:100vh;
+margin-left:240px;
+width:calc(100% - 240px);
 }
 
-.topbar{
-  height:70px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 25px;
-  background:#111b24;
-  position:sticky;
-  top:0;
-  z-index:10;
-}
-
-.topbar h1{
-  font-size:20px;
-  margin:0;
-}
-
-.top-right{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.status-dot{
-  width:9px;
-  height:9px;
-  border-radius:50%;
-  background:#22c55e;
-  display:inline-block;
-}
-
-.status-dot.off{
-  background:#ef4444;
+header{
+height:68px;
+border-bottom:1px solid var(--border);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 24px;
+background:#111b24;
+position:sticky;
+top:0;
+z-index:5;
 }
 
 .container{
-  padding:25px;
+padding:24px;
 }
 
-/* PAGE */
 .page{
-  display:none;
+display:none;
 }
 
 .page.active{
-  display:block;
+display:block;
 }
 
-.page-title{
-  margin-bottom:20px;
+.muted{
+color:var(--muted);
+font-size:13px;
 }
 
-.page-title h2{
-  margin:0 0 5px;
-}
-
-.page-title p{
-  margin:0;
-  color:var(--muted);
-}
-
-/* CARDS */
 .card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:18px;
-  box-shadow:var(--shadow);
+background:var(--card);
+border:1px solid var(--border);
+border-radius:14px;
+padding:18px;
+margin-bottom:18px;
 }
 
-.card-title{
-  font-weight:bold;
-  margin-bottom:15px;
-}
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-  margin-bottom:20px;
-}
-
-.stat-card{
-  background:var(--card);
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:18px;
-}
-
-.stat-label{
-  color:var(--muted);
-  font-size:13px;
-}
-
-.stat-value{
-  font-size:25px;
-  font-weight:bold;
-  margin-top:8px;
-}
-
-.stat-green{
-  color:#4ade80;
-}
-
-.stat-red{
-  color:#f87171;
-}
-
-/* ACCOUNT PANEL */
-.account-panel{
-  margin-bottom:20px;
-  border:1px solid #245a48;
-  background:linear-gradient(135deg,#142b24,#17212b);
-}
-
-.account-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:18px;
-}
-
-.account-header-left{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-
-.account-icon{
-  width:45px;
-  height:45px;
-  border-radius:11px;
-  background:var(--green);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:22px;
-}
-
-.account-header h3{
-  margin:0;
-}
-
-.account-header small{
-  color:var(--muted);
-}
-
-.robot-status{
-  padding:8px 13px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:bold;
-  background:#173b2c;
-  color:#4ade80;
-  border:1px solid #276447;
-}
-
-.robot-status.stopped{
-  background:#3b1c1c;
-  color:#f87171;
-  border-color:#6b2c2c;
+.account-head{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:16px;
 }
 
 .account-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:12px;
 }
 
-.account-item{
-  background:rgba(255,255,255,.035);
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:12px;
+.item{
+background:rgba(255,255,255,.035);
+border:1px solid var(--border);
+border-radius:10px;
+padding:12px;
 }
 
-.account-item label{
-  display:block;
-  font-size:11px;
-  color:var(--muted);
-  margin-bottom:6px;
+.item label{
+display:block;
+color:var(--muted);
+font-size:11px;
+margin-bottom:6px;
 }
 
-.account-item strong{
-  display:block;
-  font-size:14px;
-  word-break:break-word;
+.item strong{
+word-break:break-word;
 }
 
-/* SEARCH */
-.dashboard-search{
-  margin-bottom:20px;
+.badge{
+padding:8px 12px;
+border-radius:20px;
+background:#173b2c;
+color:#4ade80;
+font-size:12px;
+font-weight:bold;
 }
 
-.search-box{
-  display:flex;
-  gap:10px;
+.badge.off{
+background:#3b1c1c;
+color:#f87171;
 }
 
-.search-box input{
-  flex:1;
+.stats{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:15px;
+margin-bottom:18px;
+}
+
+.stat{
+background:var(--card);
+border:1px solid var(--border);
+border-radius:14px;
+padding:18px;
+}
+
+.stat small{
+color:var(--muted);
+}
+
+.stat b{
+display:block;
+font-size:24px;
+margin-top:8px;
+}
+
+.formgrid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:15px;
+}
+
+.form label{
+display:block;
+color:var(--muted);
+font-size:12px;
+margin-bottom:7px;
 }
 
 input,
 select{
-  width:100%;
-  background:#111b24;
-  border:1px solid var(--border);
-  color:var(--text);
-  border-radius:8px;
-  padding:11px 12px;
-  outline:none;
+width:100%;
+background:#111b24;
+border:1px solid var(--border);
+color:var(--text);
+padding:11px;
+border-radius:8px;
 }
 
-input:focus,
-select:focus{
-  border-color:var(--green2);
+button.btn{
+border:0;
+border-radius:8px;
+padding:11px 15px;
+color:#fff;
+background:var(--green);
+cursor:pointer;
 }
 
-.btn{
-  border:0;
-  border-radius:8px;
-  padding:10px 15px;
-  color:white;
-  background:var(--green);
+button.btn:hover{
+background:var(--green2);
 }
 
-.btn:hover{
-  background:var(--green2);
+.actions{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+margin-top:18px;
 }
 
-.btn-danger{
-  background:#b91c1c;
+.status{
+margin-top:14px;
+padding:11px;
+border-radius:8px;
+border:1px solid var(--border);
+color:var(--muted);
 }
 
-.btn-secondary{
-  background:#334155;
+.status.ok{
+color:#4ade80;
+border-color:#276447;
 }
 
-/* SEARCH RESULTS */
-.search-result{
-  margin-top:12px;
-  display:none;
-}
-
-.student-result{
-  background:#111b24;
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:13px;
-  margin-top:8px;
-}
-
-.student-result strong{
-  display:block;
-  margin-bottom:5px;
-}
-
-.student-result span{
-  color:var(--muted);
-  font-size:13px;
-}
-
-/* GRID */
-.grid-2{
-  display:grid;
-  grid-template-columns:1.5fr 1fr;
-  gap:20px;
-}
-
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
-}
-
-.market-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
-}
-
-/* CHART */
-.chart-box{
-  height:280px;
-  position:relative;
-  overflow:hidden;
-  background:#111b24;
-  border-radius:10px;
-  border:1px solid var(--border);
-}
-
-.chart-line{
-  width:100%;
-  height:100%;
-}
-
-/* MARKET */
-.market-card{
-  background:#111b24;
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:15px;
-}
-
-.market-top{
-  display:flex;
-  justify-content:space-between;
-  margin-bottom:15px;
-}
-
-.market-name{
-  font-weight:bold;
-}
-
-.market-price{
-  font-size:20px;
-  font-weight:bold;
-}
-
-.market-info{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-}
-
-.market-info div{
-  background:var(--card2);
-  border-radius:7px;
-  padding:8px;
-}
-
-.market-info small{
-  display:block;
-  color:var(--muted);
-  font-size:10px;
-}
-
-.market-info strong{
-  font-size:12px;
-}
-
-.signal{
-  margin-top:12px;
-  padding:9px;
-  text-align:center;
-  border-radius:7px;
-  background:#173b2c;
-  color:#4ade80;
-  font-weight:bold;
-}
-
-/* RISK */
-.risk-row{
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid var(--border);
-  padding:10px 0;
-}
-
-.risk-row:last-child{
-  border-bottom:0;
-}
-
-/* TABLE */
-.table-wrap{
-  overflow-x:auto;
+.status.err{
+color:#f87171;
+border-color:#6b2c2c;
 }
 
 table{
-  width:100%;
-  border-collapse:collapse;
+width:100%;
+border-collapse:collapse;
 }
 
-th,td{
-  text-align:left;
-  padding:12px 10px;
-  border-bottom:1px solid var(--border);
-  font-size:13px;
+th,
+td{
+text-align:left;
+padding:11px;
+border-bottom:1px solid var(--border);
+font-size:13px;
 }
 
 th{
-  color:var(--muted);
-  font-weight:normal;
+color:var(--muted);
 }
 
-.buy{
-  color:#4ade80;
-  font-weight:bold;
-}
-
-.sell{
-  color:#f87171;
-  font-weight:bold;
-}
-
-/* SETTINGS */
-.settings-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:15px;
-}
-
-.form-group label{
-  display:block;
-  color:var(--muted);
-  font-size:12px;
-  margin-bottom:7px;
-}
-
-.settings-actions{
-  margin-top:20px;
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-.supabase-status{
-  margin-top:15px;
-  padding:11px;
-  border-radius:8px;
-  background:#17212b;
-  border:1px solid var(--border);
-  color:var(--muted);
-  font-size:13px;
-}
-
-.supabase-status.ok{
-  color:#4ade80;
-  border-color:#276447;
-}
-
-.supabase-status.error{
-  color:#f87171;
-  border-color:#6b2c2c;
-}
-
-/* TOGGLE */
-.bot-control{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.switch{
-  position:relative;
-  width:48px;
-  height:25px;
-}
-
-.switch input{
-  opacity:0;
-  width:0;
-  height:0;
-}
-
-.slider{
-  position:absolute;
-  inset:0;
-  background:#475569;
-  border-radius:30px;
-  transition:.2s;
-}
-
-.slider:before{
-  content:"";
-  position:absolute;
-  width:19px;
-  height:19px;
-  left:3px;
-  top:3px;
-  background:white;
-  border-radius:50%;
-  transition:.2s;
-}
-
-.switch input:checked + .slider{
-  background:var(--green);
-}
-
-.switch input:checked + .slider:before{
-  transform:translateX(23px);
-}
-
-/* LIGHT MODE */
 body.light{
-  --bg:#f1f5f9;
-  --card:#ffffff;
-  --card2:#f8fafc;
-  --text:#17212b;
-  --muted:#64748b;
-  --border:#dbe3ea;
-  --shadow:0 5px 20px rgba(0,0,0,.06);
+--bg:#f1f5f9;
+--card:#fff;
+--text:#17212b;
+--muted:#64748b;
+--border:#dbe3ea;
 }
 
 body.light .sidebar,
-body.light .topbar,
-body.light .chart-box,
-body.light .market-card,
+body.light header,
 body.light input,
-body.light select,
-body.light .student-result,
-body.light .supabase-status{
-  background:#fff;
+body.light select{
+background:#fff;
 }
 
-body.light .account-panel{
-  background:linear-gradient(135deg,#eefaf5,#fff);
+@media(max-width:900px){
+
+.account-grid,
+.stats{
+grid-template-columns:1fr 1fr;
 }
 
-/* MOBILE */
-@media(max-width:1000px){
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .account-grid{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .grid-2{
-    grid-template-columns:1fr;
-  }
 }
 
-@media(max-width:750px){
-  .sidebar{
-    width:70px;
-    padding:15px 8px;
-  }
+@media(max-width:700px){
 
-  .logo h2,
-  .logo small,
-  .menu-title,
-  .nav-btn span,
-  .mode-badge{
-    display:none;
-  }
-
-  .logo{
-    border:0;
-  }
-
-  .nav-btn{
-    text-align:center;
-    font-size:18px;
-  }
-
-  .main{
-    margin-left:70px;
-    width:calc(100% - 70px);
-  }
-
-  .container{
-    padding:15px;
-  }
-
-  .settings-grid,
-  .market-grid,
-  .grid-3{
-    grid-template-columns:1fr;
-  }
-
-  .account-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .topbar{
-    padding:0 15px;
-  }
+.sidebar{
+width:65px;
+padding:12px 7px;
 }
 
-@media(max-width:500px){
-  .stats{
-    grid-template-columns:1fr;
-  }
-
-  .account-grid{
-    grid-template-columns:1fr;
-  }
-
-  .account-header{
-    align-items:flex-start;
-    flex-direction:column;
-  }
-
-  .search-box{
-    flex-direction:column;
-  }
+.logo h2,
+.logo small,
+.mode,
+.nav span{
+display:none;
 }
+
+.nav{
+text-align:center;
+}
+
+.main{
+margin-left:65px;
+width:calc(100% - 65px);
+}
+
+.container{
+padding:14px;
+}
+
+.formgrid,
+.stats,
+.account-grid{
+grid-template-columns:1fr;
+}
+
+}
+
 </style>
 </head>
 
@@ -723,1497 +346,1061 @@ body.light .account-panel{
 
 <div class="app">
 
-<!-- SIDEBAR -->
 <aside class="sidebar">
 
-  <div class="logo">
-    <h2>🤖 Trading Robot</h2>
-    <small>XAUUSD • BTCUSD</small>
-  </div>
+<div class="logo">
+<h2>🤖 Trading Robot</h2>
+<small>Exness • MT5</small>
+</div>
 
-  <div class="menu-title">Menu</div>
+<button class="nav active" onclick="page('dashboard',this)">
+📊 <span>Dashboard</span>
+</button>
 
-  <button class="nav-btn active" onclick="showPage('dashboard',this)">
-    📊 <span>Dashboard</span>
-  </button>
+<button class="nav" onclick="page('positions',this)">
+💼 <span>Posisi</span>
+</button>
 
-  <button class="nav-btn" onclick="showPage('positions',this)">
-    💼 <span>Posisi</span>
-  </button>
+<button class="nav" onclick="page('history',this)">
+📜 <span>Riwayat</span>
+</button>
 
-  <button class="nav-btn" onclick="showPage('history',this)">
-    📜 <span>Riwayat</span>
-  </button>
+<button class="nav" onclick="page('settings',this)">
+⚙️ <span>Pengaturan</span>
+</button>
 
-  <button class="nav-btn" onclick="showPage('settings',this)">
-    ⚙️ <span>Pengaturan</span>
-  </button>
-
-  <div class="sidebar-bottom">
-    <div class="mode-badge" id="sidebarMode">
-      DEMO MODE
-    </div>
-  </div>
+<div class="mode" id="sideMode">
+DEMO MODE
+</div>
 
 </aside>
 
-<!-- MAIN -->
+
 <main class="main">
 
-  <header class="topbar">
-    <h1 id="pageHeading">Dashboard Utama</h1>
-
-    <div class="top-right">
-      <span class="status-dot" id="topStatusDot"></span>
-      <span id="topStatusText">Robot Running</span>
-    </div>
-  </header>
-
-  <div class="container">
-
-    <!-- ================= DASHBOARD ================= -->
-    <section id="dashboard" class="page active">
-
-      <div class="page-title">
-        <h2>Dashboard Utama</h2>
-        <p>Monitoring robot trading dan akun yang tersimpan.</p>
-      </div>
-
-      <!-- PANEL AKUN TRADING -->
-      <div class="card account-panel">
-
-        <div class="account-header">
-
-          <div class="account-header-left">
-            <div class="account-icon">💼</div>
-
-            <div>
-              <h3>Akun Trading</h3>
-              <small id="accountUpdated">
-                Mengambil data dari Supabase...
-              </small>
-            </div>
-          </div>
-
-          <div class="robot-status" id="dashboardRobotStatus">
-            ● RUNNING
-          </div>
-
-        </div>
-
-        <div class="account-grid">
-
-          <div class="account-item">
-            <label>ID AKUN TRADING</label>
-            <strong id="dashAccountId">-</strong>
-          </div>
-
-          <div class="account-item">
-            <label>SERVER BROKER</label>
-            <strong id="dashServer">-</strong>
-          </div>
-
-          <div class="account-item">
-            <label>MODE AKUN</label>
-            <strong id="dashMode">-</strong>
-          </div>
-
-          <div class="account-item">
-            <label>INSTRUMEN</label>
-            <strong id="dashAsset">-</strong>
-          </div>
+<header>
 
-          <div class="account-item">
-            <label>MODE TRADING</label>
-            <strong id="dashStrategy">-</strong>
-          </div>
+<h2 id="title">
+Dashboard Utama
+</h2>
 
-          <div class="account-item">
-            <label>TIMEFRAME</label>
-            <strong id="dashTimeframe">-</strong>
-          </div>
+<span id="robotState">
+● Belum terhubung
+</span>
 
-          <div class="account-item">
-            <label>MAKS POSISI</label>
-            <strong id="dashMaxPositions">-</strong>
-          </div>
-
-          <div class="account-item">
-            <label>LOT</label>
-            <strong id="dashLot">-</strong>
-          </div>
-
-        </div>
+</header>
 
-      </div>
 
-      <!-- PENCARIAN SISWA ADMIN -->
-      <div class="card dashboard-search">
+<div class="container">
 
-        <div class="card-title">
-          🔎 Pencarian Siswa
-        </div>
 
-        <div class="search-box">
-          <input
-            type="text"
-            id="dashboardStudentSearch"
-            placeholder="Cari nama siswa atau kelas..."
-            oninput="searchStudentDashboard()"
-          >
-          <button class="btn" onclick="searchStudentDashboard()">
-            Cari
-          </button>
-        </div>
+<!-- DASHBOARD -->
 
-        <div id="studentSearchResult" class="search-result"></div>
+<section id="dashboard" class="page active">
 
-      </div>
+<h2>Akun Trading</h2>
 
-      <!-- STATS -->
-      <div class="stats">
+<p class="muted">
+Data akun akan diambil dari MT5 melalui EA Bridge.
+</p>
 
-        <div class="stat-card">
-          <div class="stat-label">Balance</div>
-          <div class="stat-value" id="balance">$10,000.00</div>
-        </div>
 
-        <div class="stat-card">
-          <div class="stat-label">Equity</div>
-          <div class="stat-value" id="equity">$10,245.30</div>
-        </div>
+<div class="card">
 
-        <div class="stat-card">
-          <div class="stat-label">Profit Hari Ini</div>
-          <div class="stat-value stat-green" id="todayProfit">
-            +$145.80
-          </div>
-        </div>
+<div class="account-head">
 
-        <div class="stat-card">
-          <div class="stat-label">Win Rate</div>
-          <div class="stat-value">66.7%</div>
-        </div>
+<div>
 
-      </div>
+<h3 style="margin:0">
+💼 Akun Exness / MT5
+</h3>
 
-      <!-- CHART + RISK -->
-      <div class="grid-2">
+<span class="muted" id="lastSeen">
+Belum ada data MT5
+</span>
 
-        <div class="card">
+</div>
 
-          <div class="card-title">
-            Pergerakan Harga
-          </div>
+<span class="badge off" id="connBadge">
+BELUM TERHUBUNG
+</span>
 
-          <div class="chart-box">
-            <canvas id="priceChart" class="chart-line"></canvas>
-          </div>
+</div>
 
-          <div style="margin-top:10px;color:var(--muted);font-size:12px;">
-            Simulasi market monitor • <span id="chartTimeframe">M15</span>
-          </div>
 
-        </div>
+<div class="account-grid">
 
-        <div class="card">
+<div class="item">
+<label>ID AKUN</label>
+<strong id="dLogin">-</strong>
+</div>
 
-          <div class="card-title">
-            Risk Management
-          </div>
+<div class="item">
+<label>SERVER</label>
+<strong id="dServer">-</strong>
+</div>
 
-          <div class="risk-row">
-            <span>Risk / Trade</span>
-            <strong id="riskDisplay">1%</strong>
-          </div>
+<div class="item">
+<label>CURRENCY</label>
+<strong id="dCurrency">-</strong>
+</div>
 
-          <div class="risk-row">
-            <span>SL ATR</span>
-            <strong id="slDisplay">1.5</strong>
-          </div>
+<div class="item">
+<label>TRADE ALLOWED</label>
+<strong id="dTrade">-</strong>
+</div>
 
-          <div class="risk-row">
-            <span>TP ATR</span>
-            <strong id="tpDisplay">3</strong>
-          </div>
+</div>
 
-          <div class="risk-row">
-            <span>Max Posisi</span>
-            <strong id="maxPositionDisplay">3</strong>
-          </div>
+</div>
 
-        </div>
 
-      </div>
+<div class="stats">
 
-      <br>
+<div class="stat">
 
-      <!-- MARKET -->
-      <div class="card">
+<small>Balance</small>
 
-        <div class="card-title">
-          Market Monitor
-        </div>
+<b id="dBalance">
+0.00
+</b>
 
-        <div class="market-grid">
+</div>
 
-          <div class="market-card">
 
-            <div class="market-top">
-              <div class="market-name">XAUUSD</div>
-              <div class="market-price" id="goldPrice">
-                2646.80
-              </div>
-            </div>
+<div class="stat">
 
-            <div class="market-info">
+<small>Equity</small>
 
-              <div>
-                <small>EMA</small>
-                <strong id="goldEma">2642.30</strong>
-              </div>
+<b id="dEquity">
+0.00
+</b>
 
-              <div>
-                <small>RSI</small>
-                <strong id="goldRsi">58.4</strong>
-              </div>
+</div>
 
-              <div>
-                <small>ATR</small>
-                <strong id="goldAtr">8.42</strong>
-              </div>
 
-            </div>
+<div class="stat">
 
-            <div class="signal" id="goldSignal">
-              BUY
-            </div>
+<small>Profit</small>
 
-          </div>
+<b id="dProfit">
+0.00
+</b>
 
-          <div class="market-card">
+</div>
 
-            <div class="market-top">
-              <div class="market-name">BTCUSD</div>
-              <div class="market-price" id="btcPrice">
-                105850
-              </div>
-            </div>
 
-            <div class="market-info">
+<div class="stat">
 
-              <div>
-                <small>EMA</small>
-                <strong id="btcEma">105200</strong>
-              </div>
+<small>Terminal MT5</small>
 
-              <div>
-                <small>RSI</small>
-                <strong id="btcRsi">61.2</strong>
-              </div>
+<b id="dTerminal">
+OFF
+</b>
 
-              <div>
-                <small>ATR</small>
-                <strong id="btcAtr">1710</strong>
-              </div>
+</div>
 
-            </div>
+</div>
 
-            <div class="signal" id="btcSignal">
-              BUY
-            </div>
 
-          </div>
+<div class="card">
 
-        </div>
+<h3>
+⚙️ Pengaturan Robot
+</h3>
 
-      </div>
+<div class="account-grid">
 
-    </section>
+<div class="item">
+<label>INSTRUMEN</label>
+<strong id="dAsset">-</strong>
+</div>
 
+<div class="item">
+<label>STRATEGI</label>
+<strong id="dStrategy">-</strong>
+</div>
 
-    <!-- ================= POSITIONS ================= -->
-    <section id="positions" class="page">
+<div class="item">
+<label>TIMEFRAME</label>
+<strong id="dTf">-</strong>
+</div>
 
-      <div class="page-title">
-        <h2>Posisi Terbuka</h2>
-        <p>Monitoring posisi trading.</p>
-      </div>
+<div class="item">
+<label>LOT</label>
+<strong id="dLot">-</strong>
+</div>
 
-      <div class="card">
+</div>
 
-        <div class="table-wrap">
+</div>
 
-          <table>
+</section>
 
-            <thead>
-              <tr>
-                <th>Symbol</th>
-                <th>Type</th>
-                <th>Lot</th>
-                <th>Entry</th>
-                <th>SL</th>
-                <th>TP</th>
-                <th>Profit</th>
-              </tr>
-            </thead>
 
-            <tbody id="positionsBody">
+<!-- POSITIONS -->
 
-              <tr>
-                <td>XAUUSD</td>
-                <td class="buy">BUY</td>
-                <td>0.10</td>
-                <td>2646.80</td>
-                <td>2640.49</td>
-                <td>2659.42</td>
-                <td class="buy">+$36.00</td>
-              </tr>
-
-              <tr>
-                <td>BTCUSD</td>
-                <td class="buy">BUY</td>
-                <td>0.01</td>
-                <td>105850</td>
-                <td>103290</td>
-                <td>110970</td>
-                <td class="buy">+$82.40</td>
-              </tr>
+<section id="positions" class="page">
 
-            </tbody>
+<h2>Posisi Terbuka</h2>
 
-          </table>
+<div class="card">
 
-        </div>
+<table>
 
-      </div>
+<thead>
 
-    </section>
+<tr>
+<th>Symbol</th>
+<th>Type</th>
+<th>Lot</th>
+<th>Open</th>
+<th>Profit</th>
+</tr>
 
+</thead>
 
-    <!-- ================= HISTORY ================= -->
-    <section id="history" class="page">
+<tbody id="positionsBody">
 
-      <div class="page-title">
-        <h2>Riwayat Trading</h2>
-        <p>Riwayat transaksi robot.</p>
-      </div>
+<tr>
 
-      <div class="card">
+<td colspan="5">
+Belum ada data posisi.
+</td>
 
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;">
-          <div class="card-title" style="margin:0;">
-            Riwayat Transaksi
-          </div>
+</tr>
 
-          <button class="btn btn-danger" onclick="clearHistory()">
-            Hapus Tampilan
-          </button>
-        </div>
+</tbody>
 
-        <div class="table-wrap">
+</table>
 
-          <table>
+</div>
 
-            <thead>
-              <tr>
-                <th>Waktu</th>
-                <th>Symbol</th>
-                <th>Type</th>
-                <th>Lot</th>
-                <th>Entry</th>
-                <th>Close</th>
-                <th>Profit</th>
-              </tr>
-            </thead>
-
-            <tbody id="historyBody">
-
-              <tr>
-                <td>16 Sep 2026 09:15</td>
-                <td>XAUUSD</td>
-                <td class="buy">BUY</td>
-                <td>0.10</td>
-                <td>2640.20</td>
-                <td>2646.80</td>
-                <td class="buy">+$66.00</td>
-              </tr>
-
-              <tr>
-                <td>16 Sep 2026 08:20</td>
-                <td>BTCUSD</td>
-                <td class="buy">BUY</td>
-                <td>0.01</td>
-                <td>104900</td>
-                <td>105850</td>
-                <td class="buy">+$95.00</td>
-              </tr>
-
-              <tr>
-                <td>15 Sep 2026 16:40</td>
-                <td>XAUUSD</td>
-                <td class="sell">SELL</td>
-                <td>0.10</td>
-                <td>2655.20</td>
-                <td>2649.10</td>
-                <td class="buy">+$61.00</td>
-              </tr>
-
-              <tr>
-                <td>15 Sep 2026 13:30</td>
-                <td>BTCUSD</td>
-                <td class="sell">SELL</td>
-                <td>0.01</td>
-                <td>106300</td>
-                <td>106020</td>
-                <td class="buy">+$28.00</td>
-              </tr>
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ================= SETTINGS ================= -->
-    <section id="settings" class="page">
-
-      <div class="page-title">
-        <h2>Pengaturan Robot</h2>
-        <p>Simpan konfigurasi robot trading ke Supabase.</p>
-      </div>
-
-      <div class="card">
-
-        <div class="settings-grid">
-
-          <div class="form-group">
-            <label>ID Akun Trading</label>
-            <input
-              id="tradingAccountId"
-              type="text"
-              placeholder="Contoh: 12345678"
-            >
-          </div>
-
-          <div class="form-group">
-            <label>Server Broker</label>
-            <input
-              id="tradingServer"
-              type="text"
-              placeholder="Contoh: Broker-Demo"
-            >
-          </div>
-
-          <div class="form-group">
-            <label>Tampilan</label>
-            <select id="themeSelect">
-              <option value="dark">Mode Gelap</option>
-              <option value="light">Mode Terang</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Mode Akun</label>
-            <select id="modeSelect">
-              <option value="DEMO">DEMO</option>
-              <option value="LIVE">LIVE</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Instrumen</label>
-            <select id="assetSelect">
-              <option value="XAUUSD">XAUUSD</option>
-              <option value="BTCUSD">BTCUSD</option>
-              <option value="XAUUSD,BTCUSD">XAUUSD + BTCUSD</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Mode Trading</label>
-            <select id="strategySelect">
-              <option value="Normal">Normal</option>
-              <option value="Scalping">Scalping</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Timeframe</label>
-            <select id="timeframeSelect">
-              <option value="M1">M1</option>
-              <option value="M5">M5</option>
-              <option value="M15" selected>M15</option>
-              <option value="M30">M30</option>
-              <option value="H1">H1</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label>Maksimal Posisi</label>
-            <input id="maxPositions" type="number" min="1" value="3">
-          </div>
-
-          <div class="form-group">
-            <label>Maksimal Posisi XAU</label>
-            <input id="maxGoldPositions" type="number" min="0" value="2">
-          </div>
-
-          <div class="form-group">
-            <label>Maksimal Posisi BTC</label>
-            <input id="maxBtcPositions" type="number" min="0" value="2">
-          </div>
-
-          <div class="form-group">
-            <label>Lot</label>
-            <input id="lotSize" type="number" min="0.01" step="0.01" value="0.10">
-          </div>
-
-          <div class="form-group">
-            <label>EMA Cepat</label>
-            <input id="emaFast" type="number" min="1" value="9">
-          </div>
-
-          <div class="form-group">
-            <label>EMA Lambat</label>
-            <input id="emaSlow" type="number" min="1" value="21">
-          </div>
-
-          <div class="form-group">
-            <label>RSI Period</label>
-            <input id="rsiPeriod" type="number" min="1" value="14">
-          </div>
-
-          <div class="form-group">
-            <label>Risiko %</label>
-            <input id="riskInput" type="number" min="0" step="0.1" value="1">
-          </div>
-
-          <div class="form-group">
-            <label>SL ATR</label>
-            <input id="slAtr" type="number" min="0" step="0.1" value="1.5">
-          </div>
-
-          <div class="form-group">
-            <label>TP ATR</label>
-            <input id="tpAtr" type="number" min="0" step="0.1" value="3">
-          </div>
-
-        </div>
-
-        <div class="settings-actions">
-
-          <button class="btn" onclick="saveSettings()">
-            💾 Simpan Pengaturan
-          </button>
-
-          <button class="btn btn-secondary" onclick="loadSettings()">
-            🔄 Muat dari Supabase
-          </button>
-
-          <button class="btn" id="botButton" onclick="toggleBot()">
-            ⏹ Stop Robot
-          </button>
-
-        </div>
-
-        <div id="supabaseStatus" class="supabase-status">
-          Menghubungkan ke Supabase...
-        </div>
-
-      </div>
-
-    </section>
-
-  </div>
+</section>
+
+
+<!-- HISTORY -->
+
+<section id="history" class="page">
+
+<h2>Riwayat Trading</h2>
+
+<div class="card">
+
+<p class="muted">
+Riwayat transaksi MT5 akan dihubungkan pada tahap berikutnya.
+</p>
+
+</div>
+
+</section>
+
+
+<!-- SETTINGS -->
+
+<section id="settings" class="page">
+
+<h2>
+Pengaturan Robot
+</h2>
+
+
+<div class="card">
+
+<div class="formgrid">
+
+
+<div class="form">
+
+<label>
+ID Akun Trading
+</label>
+
+<input
+id="tradingAccountId"
+placeholder="Nomor akun MT5"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Server Exness
+</label>
+
+<input
+id="tradingServer"
+placeholder="Server MT5 Exness"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Mode Akun
+</label>
+
+<select id="modeSelect">
+
+<option>
+DEMO
+</option>
+
+<option>
+LIVE
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Instrumen
+</label>
+
+<select id="assetSelect">
+
+<option>
+XAUUSD
+</option>
+
+<option>
+BTCUSD
+</option>
+
+<option>
+XAUUSD,BTCUSD
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Mode Trading
+</label>
+
+<select id="strategySelect">
+
+<option>
+Normal
+</option>
+
+<option>
+Scalping
+</option>
+
+</select>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Timeframe
+</label>
+
+<select id="timeframeSelect">
+
+<option>M1</option>
+<option selected>M5</option>
+<option>M15</option>
+<option>M30</option>
+<option>H1</option>
+
+</select>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Maksimal Posisi
+</label>
+
+<input
+id="maxPositions"
+type="number"
+value="3"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Maks Posisi XAU
+</label>
+
+<input
+id="maxGoldPositions"
+type="number"
+value="2"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Maks Posisi BTC
+</label>
+
+<input
+id="maxBtcPositions"
+type="number"
+value="2"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Lot
+</label>
+
+<input
+id="lotSize"
+type="number"
+step="0.01"
+value="0.10"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+EMA Cepat
+</label>
+
+<input
+id="emaFast"
+type="number"
+value="9"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+EMA Lambat
+</label>
+
+<input
+id="emaSlow"
+type="number"
+value="21"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+RSI Period
+</label>
+
+<input
+id="rsiPeriod"
+type="number"
+value="14"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Risk %
+</label>
+
+<input
+id="riskInput"
+type="number"
+step="0.1"
+value="1"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+SL ATR
+</label>
+
+<input
+id="slAtr"
+type="number"
+step="0.1"
+value="1.5"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+TP ATR
+</label>
+
+<input
+id="tpAtr"
+type="number"
+step="0.1"
+value="3"
+/>
+
+</div>
+
+
+<div class="form">
+
+<label>
+Tampilan
+</label>
+
+<select id="themeSelect">
+
+<option value="dark">
+Mode Gelap
+</option>
+
+<option value="light">
+Mode Terang
+</option>
+
+</select>
+
+</div>
+
+
+</div>
+
+
+<div class="actions">
+
+<button
+class="btn"
+onclick="saveSettings()"
+>
+💾 Simpan Pengaturan
+</button>
+
+
+<button
+class="btn"
+onclick="loadSettings()"
+>
+🔄 Muat Pengaturan
+</button>
+
+</div>
+
+
+<div
+id="saveStatus"
+class="status"
+>
+Menyiapkan Supabase...
+</div>
+
+</div>
+
+</section>
+
+</div>
+
 </main>
 
 </div>
 
 
 <script>
-/* =========================================================
-   SUPABASE
-========================================================= */
 
 const SUPABASE_URL =
-  "https://dicimwikcxjdzemcxqex.supabase.co";
+"https://dicimwikcxjdzemcxqex.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_Atigqj0iWDe3duDGlImkBQ_i-gMr99w";
+"sb_publishable_Atigqj0iWDe3duDGlImkBQ_i-gMr99w";
 
-const db = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY
+const db =
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
 
-/* =========================================================
-   STATE
-========================================================= */
+function $(id){
 
-let botRunning = true;
-let settingsLoaded = false;
-
-
-/* =========================================================
-   NAVIGATION
-========================================================= */
-
-function showPage(pageId, button){
-
-  document.querySelectorAll(".page").forEach(page=>{
-    page.classList.remove("active");
-  });
-
-  const page = document.getElementById(pageId);
-
-  if(page){
-    page.classList.add("active");
-  }
-
-  document.querySelectorAll(".nav-btn").forEach(btn=>{
-    btn.classList.remove("active");
-  });
-
-  if(button){
-    button.classList.add("active");
-  }
-
-  const titles = {
-    dashboard:"Dashboard Utama",
-    positions:"Posisi Terbuka",
-    history:"Riwayat Trading",
-    settings:"Pengaturan Robot"
-  };
-
-  document.getElementById("pageHeading").textContent =
-    titles[pageId] || "Trading Robot";
+return document.getElementById(id);
 
 }
 
 
-/* =========================================================
-   SUPABASE STATUS
-========================================================= */
+function val(id){
 
-function setSupabaseStatus(message,type=""){
+return $(id)?.value || "";
 
-  const el = document.getElementById("supabaseStatus");
-
-  if(!el) return;
-
-  el.textContent = message;
-
-  el.className = "supabase-status " + type;
 }
 
 
-/* =========================================================
-   LOAD SETTINGS
-========================================================= */
+function setv(id,value){
+
+if($(id) && value !== null && value !== undefined){
+
+$(id).value = value;
+
+}
+
+}
+
+
+function page(id,button){
+
+document
+.querySelectorAll(".page")
+.forEach(x =>
+x.classList.remove("active")
+);
+
+$(id).classList.add("active");
+
+
+document
+.querySelectorAll(".nav")
+.forEach(x =>
+x.classList.remove("active")
+);
+
+button.classList.add("active");
+
+
+const titles={
+
+dashboard:"Dashboard Utama",
+
+positions:"Posisi Terbuka",
+
+history:"Riwayat Trading",
+
+settings:"Pengaturan Robot"
+
+};
+
+$("title").textContent =
+titles[id];
+
+}
+
+
+function theme(){
+
+document.body.classList.toggle(
+"light",
+val("themeSelect") === "light"
+);
+
+}
+
+
+function updateConfigPanel(){
+
+$("dAsset").textContent =
+val("assetSelect") || "-";
+
+$("dStrategy").textContent =
+val("strategySelect") || "-";
+
+$("dTf").textContent =
+val("timeframeSelect") || "-";
+
+$("dLot").textContent =
+val("lotSize") || "-";
+
+$("sideMode").textContent =
+(val("modeSelect") || "DEMO") +
+" MODE";
+
+}
+
 
 async function loadSettings(){
 
-  setSupabaseStatus(
-    "Mengambil pengaturan dari Supabase..."
-  );
+const r =
+await db
+.from("robot_settings")
+.select("*")
+.order("updated_at",{ascending:false})
+.limit(1);
 
-  const {data,error} = await db
-    .from("robot_settings")
-    .select("*")
-    .order("updated_at",{ascending:false})
-    .limit(1);
 
-  if(error){
+if(r.error){
 
-    console.error(error);
+$("saveStatus").textContent =
+"Gagal: " + r.error.message;
 
-    setSupabaseStatus(
-      "Gagal mengambil pengaturan: " + error.message,
-      "error"
-    );
+$("saveStatus").className =
+"status err";
 
-    return;
-  }
+return;
 
-  if(!data || data.length === 0){
-
-    settingsLoaded = false;
-
-    setSupabaseStatus(
-      "Belum ada pengaturan tersimpan. Silakan isi lalu tekan Simpan.",
-      ""
-    );
-
-    updateDashboardAccount();
-
-    return;
-  }
-
-  const row = data[0];
-
-  settingsLoaded = true;
-
-  setValue("tradingAccountId",row.tradingAccountId);
-  setValue("tradingServer",row.tradingServer);
-  setValue("themeSelect",row.themeSelect || "dark");
-  setValue("modeSelect",row.modeSelect || "DEMO");
-  setValue("assetSelect",row.assetSelect || "XAUUSD");
-  setValue("strategySelect",row.strategySelect || "Normal");
-  setValue("timeframeSelect",row.timeframeSelect || "M15");
-  setValue("maxPositions",row.maxPositions ?? 3);
-  setValue("maxGoldPositions",row.maxGoldPositions ?? 2);
-  setValue("maxBtcPositions",row.maxBtcPositions ?? 2);
-  setValue("lotSize",row.lotSize ?? 0.10);
-  setValue("emaFast",row.emaFast ?? 9);
-  setValue("emaSlow",row.emaSlow ?? 21);
-  setValue("rsiPeriod",row.rsiPeriod ?? 14);
-  setValue("riskInput",row.riskInput ?? 1);
-  setValue("slAtr",row.slAtr ?? 1.5);
-  setValue("tpAtr",row.tpAtr ?? 3);
-
-  applyTheme();
-  updateDashboardAccount();
-  updateRiskDisplay();
-
-  const updated = row.updated_at
-    ? new Date(row.updated_at).toLocaleString("id-ID")
-    : "-";
-
-  document.getElementById("accountUpdated").textContent =
-    "Terakhir diperbarui: " + updated;
-
-  setSupabaseStatus(
-    "✓ Pengaturan berhasil dimuat dari Supabase.",
-    "ok"
-  );
 }
 
 
-/* =========================================================
-   SAVE SETTINGS
-========================================================= */
+if(!r.data || !r.data.length){
+
+$("saveStatus").textContent =
+"Belum ada pengaturan tersimpan.";
+
+return;
+
+}
+
+
+const x =
+r.data[0];
+
+
+[
+"tradingAccountId",
+"tradingServer",
+"modeSelect",
+"assetSelect",
+"strategySelect",
+"timeframeSelect",
+"maxPositions",
+"maxGoldPositions",
+"maxBtcPositions",
+"lotSize",
+"emaFast",
+"emaSlow",
+"rsiPeriod",
+"riskInput",
+"slAtr",
+"tpAtr",
+"themeSelect"
+
+].forEach(k =>
+setv(k,x[k])
+);
+
+
+theme();
+
+updateConfigPanel();
+
+
+$("saveStatus").textContent =
+"✓ Pengaturan berhasil dimuat.";
+
+$("saveStatus").className =
+"status ok";
+
+}
+
 
 async function saveSettings(){
 
-  const payload = {
+const payload={
 
-    tradingAccountId:
-      getValue("tradingAccountId"),
+tradingAccountId:
+val("tradingAccountId"),
 
-    tradingServer:
-      getValue("tradingServer"),
+tradingServer:
+val("tradingServer"),
 
-    themeSelect:
-      getValue("themeSelect"),
+modeSelect:
+val("modeSelect"),
 
-    modeSelect:
-      getValue("modeSelect"),
+assetSelect:
+val("assetSelect"),
 
-    assetSelect:
-      getValue("assetSelect"),
+strategySelect:
+val("strategySelect"),
 
-    strategySelect:
-      getValue("strategySelect"),
+timeframeSelect:
+val("timeframeSelect"),
 
-    timeframeSelect:
-      getValue("timeframeSelect"),
+maxPositions:
+Number(val("maxPositions")),
 
-    maxPositions:
-      Number(getValue("maxPositions")),
+maxGoldPositions:
+Number(val("maxGoldPositions")),
 
-    maxGoldPositions:
-      Number(getValue("maxGoldPositions")),
+maxBtcPositions:
+Number(val("maxBtcPositions")),
 
-    maxBtcPositions:
-      Number(getValue("maxBtcPositions")),
+lotSize:
+Number(val("lotSize")),
 
-    lotSize:
-      Number(getValue("lotSize")),
+emaFast:
+Number(val("emaFast")),
 
-    emaFast:
-      Number(getValue("emaFast")),
+emaSlow:
+Number(val("emaSlow")),
 
-    emaSlow:
-      Number(getValue("emaSlow")),
+rsiPeriod:
+Number(val("rsiPeriod")),
 
-    rsiPeriod:
-      Number(getValue("rsiPeriod")),
+riskInput:
+Number(val("riskInput")),
 
-    riskInput:
-      Number(getValue("riskInput")),
+slAtr:
+Number(val("slAtr")),
 
-    slAtr:
-      Number(getValue("slAtr")),
+tpAtr:
+Number(val("tpAtr")),
 
-    tpAtr:
-      Number(getValue("tpAtr"))
+themeSelect:
+val("themeSelect")
 
-  };
-
-
-  setSupabaseStatus(
-    "Menyimpan pengaturan..."
-  );
+};
 
 
-  /* Cari record yang sudah ada */
-
-  const {data:existing,error:findError} = await db
-    .from("robot_settings")
-    .select("id")
-    .order("updated_at",{ascending:false})
-    .limit(1);
-
-
-  if(findError){
-
-    console.error(findError);
-
-    setSupabaseStatus(
-      "Gagal memeriksa data: " + findError.message,
-      "error"
-    );
-
-    return;
-  }
+const q =
+await db
+.from("robot_settings")
+.select("id")
+.order("updated_at",{ascending:false})
+.limit(1);
 
 
-  let result;
+let r;
 
 
-  if(existing && existing.length > 0){
+if(q.data && q.data.length){
 
-    /* UPDATE record UUID yang sudah ada */
+r =
+await db
+.from("robot_settings")
+.update(payload)
+.eq("id",q.data[0].id);
 
-    result = await db
-      .from("robot_settings")
-      .update(payload)
-      .eq("id",existing[0].id);
+}else{
 
-  }else{
-
-    /* INSERT tanpa id agar UUID dibuat otomatis */
-
-    result = await db
-      .from("robot_settings")
-      .insert(payload);
-
-  }
-
-
-  if(result.error){
-
-    console.error(result.error);
-
-    setSupabaseStatus(
-      "Gagal menyimpan: " + result.error.message,
-      "error"
-    );
-
-    return;
-  }
-
-
-  settingsLoaded = true;
-
-  applyTheme();
-  updateDashboardAccount();
-  updateRiskDisplay();
-
-  const now = new Date().toLocaleString("id-ID");
-
-  document.getElementById("accountUpdated").textContent =
-    "Terakhir diperbarui: " + now;
-
-
-  setSupabaseStatus(
-    "✓ Pengaturan berhasil disimpan ke Supabase.",
-    "ok"
-  );
+r =
+await db
+.from("robot_settings")
+.insert(payload);
 
 }
 
 
-/* =========================================================
-   DASHBOARD ACCOUNT PANEL
-========================================================= */
+if(r.error){
 
-function updateDashboardAccount(){
+$("saveStatus").textContent =
+"Gagal: " + r.error.message;
 
-  const accountId =
-    getValue("tradingAccountId") || "-";
+$("saveStatus").className =
+"status err";
 
-  const server =
-    getValue("tradingServer") || "-";
-
-  const mode =
-    getValue("modeSelect") || "-";
-
-  const asset =
-    getValue("assetSelect") || "-";
-
-  const strategy =
-    getValue("strategySelect") || "-";
-
-  const timeframe =
-    getValue("timeframeSelect") || "-";
-
-  const maxPositions =
-    getValue("maxPositions") || "-";
-
-  const lot =
-    getValue("lotSize") || "-";
-
-
-  document.getElementById("dashAccountId").textContent =
-    accountId;
-
-  document.getElementById("dashServer").textContent =
-    server;
-
-  document.getElementById("dashMode").textContent =
-    mode;
-
-  document.getElementById("dashAsset").textContent =
-    asset;
-
-  document.getElementById("dashStrategy").textContent =
-    strategy;
-
-  document.getElementById("dashTimeframe").textContent =
-    timeframe;
-
-  document.getElementById("dashMaxPositions").textContent =
-    maxPositions;
-
-  document.getElementById("dashLot").textContent =
-    lot;
-
-  document.getElementById("chartTimeframe").textContent =
-    timeframe;
-
-  document.getElementById("sidebarMode").textContent =
-    mode + " MODE";
+return;
 
 }
 
 
-/* =========================================================
-   RISK DISPLAY
-========================================================= */
+theme();
 
-function updateRiskDisplay(){
+updateConfigPanel();
 
-  document.getElementById("riskDisplay").textContent =
-    (getValue("riskInput") || "1") + "%";
 
-  document.getElementById("slDisplay").textContent =
-    getValue("slAtr") || "1.5";
+$("saveStatus").textContent =
+"✓ Pengaturan tersimpan ke Supabase.";
 
-  document.getElementById("tpDisplay").textContent =
-    getValue("tpAtr") || "3";
-
-  document.getElementById("maxPositionDisplay").textContent =
-    getValue("maxPositions") || "3";
+$("saveStatus").className =
+"status ok";
 
 }
 
 
-/* =========================================================
-   BOT
-========================================================= */
+async function loadAccountStatus(){
 
-function toggleBot(){
-
-  botRunning = !botRunning;
-
-  updateBotStatus();
-
-}
+const r =
+await db
+.from("mt5_account_status")
+.select("*")
+.order("last_seen",{ascending:false})
+.limit(1);
 
 
-function updateBotStatus(){
+if(r.error){
 
-  const status =
-    document.getElementById("dashboardRobotStatus");
+$("lastSeen").textContent =
+"Gagal membaca status MT5";
 
-  const button =
-    document.getElementById("botButton");
-
-  const dot =
-    document.getElementById("topStatusDot");
-
-  const text =
-    document.getElementById("topStatusText");
-
-
-  if(botRunning){
-
-    status.textContent = "● RUNNING";
-    status.classList.remove("stopped");
-
-    button.textContent = "⏹ Stop Robot";
-
-    dot.classList.remove("off");
-
-    text.textContent = "Robot Running";
-
-  }else{
-
-    status.textContent = "● STOPPED";
-    status.classList.add("stopped");
-
-    button.textContent = "▶ Start Robot";
-
-    dot.classList.add("off");
-
-    text.textContent = "Robot Stopped";
-
-  }
+return;
 
 }
 
 
-/* =========================================================
-   THEME
-========================================================= */
+if(!r.data || !r.data.length){
 
-function applyTheme(){
+$("lastSeen").textContent =
+"Belum ada data dari EA MT5";
 
-  const theme =
-    getValue("themeSelect") || "dark";
-
-  if(theme === "light"){
-
-    document.body.classList.add("light");
-
-  }else{
-
-    document.body.classList.remove("light");
-
-  }
+return;
 
 }
 
 
-document.getElementById("themeSelect")
-  .addEventListener("change",applyTheme);
+const x =
+r.data[0];
 
 
-document.getElementById("modeSelect")
-  .addEventListener("change",updateDashboardAccount);
+$("dLogin").textContent =
+x.account_login || "-";
 
 
-document.getElementById("assetSelect")
-  .addEventListener("change",updateDashboardAccount);
+$("dServer").textContent =
+x.server || "-";
 
 
-document.getElementById("strategySelect")
-  .addEventListener("change",updateDashboardAccount);
+$("dCurrency").textContent =
+x.currency || "-";
 
 
-document.getElementById("timeframeSelect")
-  .addEventListener("change",function(){
-
-    updateDashboardAccount();
-
-    document.getElementById("chartTimeframe").textContent =
-      this.value;
-
-  });
+$("dTrade").textContent =
+x.trade_allowed
+? "YA"
+: "TIDAK";
 
 
-document.getElementById("maxPositions")
-  .addEventListener("input",function(){
-
-    updateDashboardAccount();
-    updateRiskDisplay();
-
-  });
+$("dBalance").textContent =
+Number(x.balance || 0)
+.toFixed(2)
++ " "
++ (x.currency || "");
 
 
-document.getElementById("lotSize")
-  .addEventListener("input",updateDashboardAccount);
+$("dEquity").textContent =
+Number(x.equity || 0)
+.toFixed(2)
++ " "
++ (x.currency || "");
 
 
-document.getElementById("riskInput")
-  .addEventListener("input",updateRiskDisplay);
+$("dProfit").textContent =
+Number(x.profit || 0)
+.toFixed(2)
++ " "
++ (x.currency || "");
 
 
-document.getElementById("slAtr")
-  .addEventListener("input",updateRiskDisplay);
+$("dTerminal").textContent =
+x.terminal_connected
+? "ON"
+: "OFF";
 
 
-document.getElementById("tpAtr")
-  .addEventListener("input",updateRiskDisplay);
+const last =
+new Date(
+x.last_seen || x.updated_at
+);
 
 
-/* =========================================================
-   HELPER
-========================================================= */
+const age =
+Date.now() -
+last.getTime();
 
-function getValue(id){
 
-  const el = document.getElementById(id);
+const online =
+x.terminal_connected &&
+age < 30000;
 
-  return el ? el.value : "";
+
+$("connBadge").textContent =
+online
+? "TERHUBUNG"
+: "TERPUTUS";
+
+
+$("connBadge").className =
+"badge" +
+(online ? "" : " off");
+
+
+$("robotState").textContent =
+online
+? "● MT5 Terhubung"
+: "● MT5 Belum Terhubung";
+
+
+$("lastSeen").textContent =
+"Terakhir terlihat: " +
+last.toLocaleString("id-ID");
 
 }
 
 
-function setValue(id,value){
+$("themeSelect")
+.addEventListener(
+"change",
+theme
+);
 
-  const el = document.getElementById(id);
 
-  if(el && value !== null && value !== undefined){
-    el.value = value;
-  }
+[
+"modeSelect",
+"assetSelect",
+"strategySelect",
+"timeframeSelect",
+"lotSize"
 
-}
+].forEach(id => {
 
+$(id).addEventListener(
+"change",
+updateConfigPanel
+);
 
-/* =========================================================
-   SEARCH SISWA
-   Demo frontend.
-   Jika nanti tabel siswa Supabase dihubungkan,
-   fungsi ini bisa diarahkan ke public.siswa.
-========================================================= */
+});
 
-let demoStudents = [
-
-  {
-    nama:"Abdurrahman Zaky",
-    kelas:"1A"
-  },
-
-  {
-    nama:"Abhinaya Pranandha",
-    kelas:"1B"
-  },
-
-  {
-    nama:"Abidzar Abqari Adnin",
-    kelas:"2A"
-  },
-
-  {
-    nama:"Althaf Dhafin Al Ghifari",
-    kelas:"2B"
-  },
-
-  {
-    nama:"Azzam Alfatih",
-    kelas:"2B"
-  }
-
-];
-
-
-function searchStudentDashboard(){
-
-  const keyword =
-    getValue("dashboardStudentSearch")
-      .trim()
-      .toLowerCase();
-
-  const result =
-    document.getElementById("studentSearchResult");
-
-
-  if(!keyword){
-
-    result.style.display = "none";
-    result.innerHTML = "";
-
-    return;
-  }
-
-
-  const found =
-    demoStudents.filter(student=>
-
-      student.nama.toLowerCase().includes(keyword) ||
-
-      student.kelas.toLowerCase().includes(keyword)
-
-    );
-
-
-  result.style.display = "block";
-
-
-  if(found.length === 0){
-
-    result.innerHTML = `
-      <div class="student-result">
-        <strong>Data tidak ditemukan</strong>
-        <span>
-          Tidak ada siswa yang cocok dengan pencarian.
-        </span>
-      </div>
-    `;
-
-    return;
-  }
-
-
-  result.innerHTML =
-    found.map(student=>`
-
-      <div class="student-result">
-
-        <strong>${escapeHtml(student.nama)}</strong>
-
-        <span>
-          Kelas: ${escapeHtml(student.kelas)}
-        </span>
-
-      </div>
-
-    `).join("");
-
-}
-
-
-function escapeHtml(text){
-
-  return String(text)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
-/* =========================================================
-   DEMO MARKET
-========================================================= */
-
-function randomBetween(min,max){
-
-  return Math.random() * (max-min) + min;
-
-}
-
-
-function updateMarket(){
-
-  if(!botRunning) return;
-
-
-  const gold =
-    randomBetween(2640,2660).toFixed(2);
-
-  const btc =
-    Math.round(randomBetween(104800,106500));
-
-
-  document.getElementById("goldPrice").textContent =
-    gold;
-
-  document.getElementById("btcPrice").textContent =
-    btc;
-
-
-  document.getElementById("goldEma").textContent =
-    randomBetween(2638,2655).toFixed(2);
-
-  document.getElementById("goldRsi").textContent =
-    randomBetween(45,70).toFixed(1);
-
-  document.getElementById("goldAtr").textContent =
-    randomBetween(6,11).toFixed(2);
-
-
-  document.getElementById("btcEma").textContent =
-    Math.round(randomBetween(104000,106000));
-
-  document.getElementById("btcRsi").textContent =
-    randomBetween(45,70).toFixed(1);
-
-  document.getElementById("btcAtr").textContent =
-    Math.round(randomBetween(1300,2200));
-
-
-  const goldSignal =
-    Math.random() > .45 ? "BUY" : "WAIT";
-
-  const btcSignal =
-    Math.random() > .45 ? "BUY" : "WAIT";
-
-
-  document.getElementById("goldSignal").textContent =
-    goldSignal;
-
-  document.getElementById("btcSignal").textContent =
-    btcSignal;
-
-}
-
-
-/* =========================================================
-   CHART
-========================================================= */
-
-function drawChart(){
-
-  const canvas =
-    document.getElementById("priceChart");
-
-  if(!canvas) return;
-
-  const ctx =
-    canvas.getContext("2d");
-
-  const rect =
-    canvas.getBoundingClientRect();
-
-  const dpr =
-    window.devicePixelRatio || 1;
-
-  canvas.width =
-    rect.width * dpr;
-
-  canvas.height =
-    rect.height * dpr;
-
-  ctx.scale(dpr,dpr);
-
-  const width =
-    rect.width;
-
-  const height =
-    rect.height;
-
-
-  ctx.clearRect(
-    0,
-    0,
-    width,
-    height
-  );
-
-
-  /* grid */
-
-  ctx.strokeStyle =
-    getComputedStyle(document.body)
-      .getPropertyValue("--border");
-
-  ctx.lineWidth = 1;
-
-
-  for(let i=1;i<5;i++){
-
-    const y =
-      (height/5)*i;
-
-    ctx.beginPath();
-
-    ctx.moveTo(0,y);
-
-    ctx.lineTo(width,y);
-
-    ctx.stroke();
-
-  }
-
-
-  /* line */
-
-  ctx.beginPath();
-
-  let value =
-    height * .55;
-
-  const points = 55;
-
-
-  for(let i=0;i<points;i++){
-
-    value +=
-      randomBetween(-10,10);
-
-    value =
-      Math.max(
-        35,
-        Math.min(height-35,value)
-      );
-
-    const x =
-      (width/(points-1))*i;
-
-
-    if(i===0){
-      ctx.moveTo(x,value);
-    }else{
-      ctx.lineTo(x,value);
-    }
-
-  }
-
-
-  ctx.strokeStyle = "#4ade80";
-  ctx.lineWidth = 2;
-  ctx.stroke();
-
-}
-
-
-/* =========================================================
-   HISTORY
-========================================================= */
-
-function clearHistory(){
-
-  document.getElementById("historyBody").innerHTML = `
-    <tr>
-      <td colspan="7" style="text-align:center;color:var(--muted);">
-        Riwayat pada tampilan telah dibersihkan.
-      </td>
-    </tr>
-  `;
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
 
 async function init(){
 
-  updateBotStatus();
+theme();
 
-  updateRiskDisplay();
+await loadSettings();
 
-  updateDashboardAccount();
+updateConfigPanel();
 
-  drawChart();
-
-  await loadSettings();
-
-  updateBotStatus();
+await loadAccountStatus();
 
 }
 
 
-window.addEventListener("resize",drawChart);
-
-setInterval(updateMarket,3000);
-
-setInterval(drawChart,5000);
-
 init();
+
+
+setInterval(
+loadAccountStatus,
+5000
+);
 
 </script>
 
