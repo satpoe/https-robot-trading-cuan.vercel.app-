@@ -4,341 +4,501 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Trading Robot Dashboard - Exness MT5</title>
+<title>Trading Robot Dashboard - MT5</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 :root{
---bg:#0f1720;
---card:#17212b;
---text:#f1f5f9;
---muted:#94a3b8;
---border:#2c3b49;
---green:#176b52;
---green2:#218565;
---red:#ef4444;
+  --bg:#0f1720;
+  --card:#17212b;
+  --card2:#111b24;
+  --text:#f1f5f9;
+  --muted:#94a3b8;
+  --border:#2c3b49;
+  --green:#176b52;
+  --green2:#218565;
+  --red:#ef4444;
+  --yellow:#f59e0b;
+  --blue:#3b82f6;
 }
 
 *{
-box-sizing:border-box;
+  box-sizing:border-box;
 }
 
 body{
-margin:0;
-font-family:Arial,sans-serif;
-background:var(--bg);
-color:var(--text);
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
 }
 
 .app{
-display:flex;
-min-height:100vh;
+  display:flex;
+  min-height:100vh;
 }
 
 .sidebar{
-width:240px;
-background:#111b24;
-border-right:1px solid var(--border);
-padding:20px 14px;
-position:fixed;
-inset:0 auto 0 0;
+  width:240px;
+  background:#111b24;
+  border-right:1px solid var(--border);
+  padding:20px 14px;
+  position:fixed;
+  inset:0 auto 0 0;
 }
 
 .logo{
-padding:8px 10px 22px;
-border-bottom:1px solid var(--border);
-margin-bottom:18px;
+  padding:8px 10px 22px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:18px;
 }
 
 .logo h2{
-margin:0;
+  margin:0 0 5px;
 }
 
 .logo small{
-color:var(--muted);
+  color:var(--muted);
 }
 
 .nav{
-width:100%;
-border:0;
-background:transparent;
-color:#cbd5e1;
-text-align:left;
-padding:12px;
-border-radius:9px;
-margin:3px 0;
-cursor:pointer;
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#cbd5e1;
+  text-align:left;
+  padding:12px;
+  border-radius:9px;
+  margin:3px 0;
+  cursor:pointer;
+  font-size:14px;
 }
 
 .nav:hover,
 .nav.active{
-background:var(--green);
-color:#fff;
+  background:var(--green);
+  color:#fff;
 }
 
 .mode{
-position:absolute;
-bottom:18px;
-left:14px;
-right:14px;
-text-align:center;
-padding:9px;
-border:1px solid #285846;
-border-radius:8px;
-color:#6ee7b7;
+  position:absolute;
+  bottom:18px;
+  left:14px;
+  right:14px;
+  text-align:center;
+  padding:9px;
+  border:1px solid #285846;
+  border-radius:8px;
+  color:#6ee7b7;
+  font-size:12px;
+  font-weight:bold;
 }
 
 .main{
-margin-left:240px;
-width:calc(100% - 240px);
+  margin-left:240px;
+  width:calc(100% - 240px);
 }
 
 header{
-height:68px;
-border-bottom:1px solid var(--border);
-display:flex;
-align-items:center;
-justify-content:space-between;
-padding:0 24px;
-background:#111b24;
-position:sticky;
-top:0;
-z-index:5;
+  height:68px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  background:#111b24;
+  position:sticky;
+  top:0;
+  z-index:5;
+}
+
+header h2{
+  margin:0;
+}
+
+.robot-top{
+  font-size:13px;
+  font-weight:bold;
 }
 
 .container{
-padding:24px;
+  padding:24px;
 }
 
 .page{
-display:none;
+  display:none;
 }
 
 .page.active{
-display:block;
+  display:block;
 }
 
 .muted{
-color:var(--muted);
-font-size:13px;
+  color:var(--muted);
+  font-size:13px;
 }
 
 .card{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:14px;
-padding:18px;
-margin-bottom:18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
+  margin-bottom:18px;
 }
 
 .account-head{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:16px;
 }
 
 .account-grid{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:12px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
 }
 
 .item{
-background:rgba(255,255,255,.035);
-border:1px solid var(--border);
-border-radius:10px;
-padding:12px;
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:12px;
 }
 
 .item label{
-display:block;
-color:var(--muted);
-font-size:11px;
-margin-bottom:6px;
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:6px;
 }
 
 .item strong{
-word-break:break-word;
+  word-break:break-word;
 }
 
 .badge{
-padding:8px 12px;
-border-radius:20px;
-background:#173b2c;
-color:#4ade80;
-font-size:12px;
-font-weight:bold;
+  padding:8px 12px;
+  border-radius:20px;
+  background:#173b2c;
+  color:#4ade80;
+  font-size:12px;
+  font-weight:bold;
+  white-space:nowrap;
 }
 
 .badge.off{
-background:#3b1c1c;
-color:#f87171;
+  background:#3b1c1c;
+  color:#f87171;
+}
+
+.badge.yellow{
+  background:#493718;
+  color:#fbbf24;
 }
 
 .stats{
-display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:15px;
-margin-bottom:18px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+  margin-bottom:18px;
 }
 
 .stat{
-background:var(--card);
-border:1px solid var(--border);
-border-radius:14px;
-padding:18px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:18px;
 }
 
 .stat small{
-color:var(--muted);
+  color:var(--muted);
 }
 
 .stat b{
-display:block;
-font-size:24px;
-margin-top:8px;
+  display:block;
+  font-size:23px;
+  margin-top:8px;
 }
 
 .formgrid{
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
 }
 
 .form label{
-display:block;
-color:var(--muted);
-font-size:12px;
-margin-bottom:7px;
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:7px;
 }
 
 input,
 select{
-width:100%;
-background:#111b24;
-border:1px solid var(--border);
-color:var(--text);
-padding:11px;
-border-radius:8px;
+  width:100%;
+  background:#111b24;
+  border:1px solid var(--border);
+  color:var(--text);
+  padding:11px;
+  border-radius:8px;
+  outline:none;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--green2);
 }
 
 button.btn{
-border:0;
-border-radius:8px;
-padding:11px 15px;
-color:#fff;
-background:var(--green);
-cursor:pointer;
+  border:0;
+  border-radius:8px;
+  padding:11px 15px;
+  color:#fff;
+  background:var(--green);
+  cursor:pointer;
+  font-weight:bold;
 }
 
 button.btn:hover{
-background:var(--green2);
+  background:var(--green2);
+}
+
+button.btn.red{
+  background:#991b1b;
+}
+
+button.btn.blue{
+  background:#2563eb;
 }
 
 .actions{
-display:flex;
-gap:10px;
-flex-wrap:wrap;
-margin-top:18px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:18px;
 }
 
 .status{
-margin-top:14px;
-padding:11px;
-border-radius:8px;
-border:1px solid var(--border);
-color:var(--muted);
+  margin-top:14px;
+  padding:11px;
+  border-radius:8px;
+  border:1px solid var(--border);
+  color:var(--muted);
 }
 
 .status.ok{
-color:#4ade80;
-border-color:#276447;
+  color:#4ade80;
+  border-color:#276447;
+  background:rgba(39,100,71,.08);
 }
 
 .status.err{
-color:#f87171;
-border-color:#6b2c2c;
+  color:#f87171;
+  border-color:#6b2c2c;
+  background:rgba(107,44,44,.08);
+}
+
+.status.warn{
+  color:#fbbf24;
+  border-color:#6b501d;
+}
+
+.switch-row{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.switch-card{
+  background:rgba(255,255,255,.035);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.switch-info strong{
+  display:block;
+  margin-bottom:5px;
+}
+
+.switch-info span{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.switch{
+  position:relative;
+  width:52px;
+  height:28px;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  background:#334155;
+  border-radius:30px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:22px;
+  height:22px;
+  left:3px;
+  top:3px;
+  background:#fff;
+  border-radius:50%;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:var(--green2);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(24px);
+}
+
+.robot-master{
+  border:1px solid #285846;
+  background:rgba(23,107,82,.12);
+}
+
+.robot-master.off{
+  border-color:#6b2c2c;
+  background:rgba(107,44,44,.08);
 }
 
 table{
-width:100%;
-border-collapse:collapse;
+  width:100%;
+  border-collapse:collapse;
 }
 
 th,
 td{
-text-align:left;
-padding:11px;
-border-bottom:1px solid var(--border);
-font-size:13px;
+  text-align:left;
+  padding:11px;
+  border-bottom:1px solid var(--border);
+  font-size:13px;
 }
 
 th{
-color:var(--muted);
+  color:var(--muted);
+}
+
+.empty{
+  color:var(--muted);
+  text-align:center;
+  padding:25px;
+}
+
+.info{
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  color:var(--muted);
+  font-size:13px;
+  margin-top:15px;
 }
 
 body.light{
---bg:#f1f5f9;
---card:#fff;
---text:#17212b;
---muted:#64748b;
---border:#dbe3ea;
+  --bg:#f1f5f9;
+  --card:#fff;
+  --card2:#fff;
+  --text:#17212b;
+  --muted:#64748b;
+  --border:#dbe3ea;
 }
 
 body.light .sidebar,
 body.light header,
 body.light input,
 body.light select{
-background:#fff;
+  background:#fff;
 }
 
 @media(max-width:900px){
 
-.account-grid,
-.stats{
-grid-template-columns:1fr 1fr;
-}
+  .account-grid,
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
 
+  .switch-row{
+    grid-template-columns:1fr;
+  }
 }
 
 @media(max-width:700px){
 
-.sidebar{
-width:65px;
-padding:12px 7px;
-}
+  .sidebar{
+    width:65px;
+    padding:12px 7px;
+  }
 
-.logo h2,
-.logo small,
-.mode,
-.nav span{
-display:none;
-}
+  .logo h2,
+  .logo small,
+  .mode,
+  .nav span{
+    display:none;
+  }
 
-.nav{
-text-align:center;
-}
+  .nav{
+    text-align:center;
+    font-size:18px;
+  }
 
-.main{
-margin-left:65px;
-width:calc(100% - 65px);
-}
+  .main{
+    margin-left:65px;
+    width:calc(100% - 65px);
+  }
 
-.container{
-padding:14px;
-}
+  header{
+    padding:0 14px;
+  }
 
-.formgrid,
-.stats,
-.account-grid{
-grid-template-columns:1fr;
-}
+  header h2{
+    font-size:17px;
+  }
 
-}
+  .container{
+    padding:14px;
+  }
 
+  .formgrid,
+  .stats,
+  .account-grid{
+    grid-template-columns:1fr;
+  }
+
+  .account-head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  table{
+    min-width:650px;
+  }
+
+  .card{
+    overflow-x:auto;
+  }
+}
 </style>
 </head>
 
@@ -346,32 +506,33 @@ grid-template-columns:1fr;
 
 <div class="app">
 
+<!-- SIDEBAR -->
 <aside class="sidebar">
 
-<div class="logo">
-<h2>🤖 Trading Robot</h2>
-<small>Exness • MT5</small>
-</div>
+  <div class="logo">
+    <h2>🤖 Trading Robot</h2>
+    <small>MT5 Control Panel</small>
+  </div>
 
-<button class="nav active" onclick="page('dashboard',this)">
-📊 <span>Dashboard</span>
-</button>
+  <button class="nav active" onclick="page('dashboard',this)">
+    📊 <span>Dashboard</span>
+  </button>
 
-<button class="nav" onclick="page('positions',this)">
-💼 <span>Posisi</span>
-</button>
+  <button class="nav" onclick="page('positions',this)">
+    💼 <span>Posisi</span>
+  </button>
 
-<button class="nav" onclick="page('history',this)">
-📜 <span>Riwayat</span>
-</button>
+  <button class="nav" onclick="page('history',this)">
+    📜 <span>Riwayat</span>
+  </button>
 
-<button class="nav" onclick="page('settings',this)">
-⚙️ <span>Pengaturan</span>
-</button>
+  <button class="nav" onclick="page('settings',this)">
+    ⚙️ <span>Pengaturan</span>
+  </button>
 
-<div class="mode" id="sideMode">
-DEMO MODE
-</div>
+  <div class="mode" id="sideMode">
+    DEMO MODE
+  </div>
 
 </aside>
 
@@ -380,13 +541,13 @@ DEMO MODE
 
 <header>
 
-<h2 id="title">
-Dashboard Utama
-</h2>
+  <h2 id="title">
+    Dashboard Utama
+  </h2>
 
-<span id="robotState">
-● Belum terhubung
-</span>
+  <span id="robotState" class="robot-top">
+    ● MT5 Belum Terhubung
+  </span>
 
 </header>
 
@@ -394,542 +555,692 @@ Dashboard Utama
 <div class="container">
 
 
-<!-- DASHBOARD -->
+<!-- ================= DASHBOARD ================= -->
 
 <section id="dashboard" class="page active">
 
-<h2>Akun Trading</h2>
+  <h2>Dashboard Utama</h2>
 
-<p class="muted">
-Data akun akan diambil dari MT5 melalui EA Bridge.
-</p>
-
-
-<div class="card">
-
-<div class="account-head">
-
-<div>
-
-<h3 style="margin:0">
-💼 Akun Exness / MT5
-</h3>
-
-<span class="muted" id="lastSeen">
-Belum ada data MT5
-</span>
-
-</div>
-
-<span class="badge off" id="connBadge">
-BELUM TERHUBUNG
-</span>
-
-</div>
+  <p class="muted">
+    Panel kontrol robot trading MT5.
+  </p>
 
 
-<div class="account-grid">
+  <!-- AKUN -->
 
-<div class="item">
-<label>ID AKUN</label>
-<strong id="dLogin">-</strong>
-</div>
+  <div class="card">
 
-<div class="item">
-<label>SERVER</label>
-<strong id="dServer">-</strong>
-</div>
+    <div class="account-head">
 
-<div class="item">
-<label>CURRENCY</label>
-<strong id="dCurrency">-</strong>
-</div>
+      <div>
+        <h3 style="margin:0 0 5px">
+          💼 Akun Trading
+        </h3>
 
-<div class="item">
-<label>TRADE ALLOWED</label>
-<strong id="dTrade">-</strong>
-</div>
+        <span class="muted" id="lastSeen">
+          Belum ada data dari MT5
+        </span>
+      </div>
 
-</div>
+      <span class="badge off" id="connBadge">
+        BELUM TERHUBUNG
+      </span>
 
-</div>
+    </div>
 
 
-<div class="stats">
+    <div class="account-grid">
 
-<div class="stat">
+      <div class="item">
+        <label>ID AKUN</label>
+        <strong id="dLogin">-</strong>
+      </div>
 
-<small>Balance</small>
+      <div class="item">
+        <label>SERVER</label>
+        <strong id="dServer">-</strong>
+      </div>
 
-<b id="dBalance">
-0.00
-</b>
+      <div class="item">
+        <label>CURRENCY</label>
+        <strong id="dCurrency">-</strong>
+      </div>
 
-</div>
+      <div class="item">
+        <label>TRADE ALLOWED</label>
+        <strong id="dTrade">-</strong>
+      </div>
 
+    </div>
 
-<div class="stat">
-
-<small>Equity</small>
-
-<b id="dEquity">
-0.00
-</b>
-
-</div>
-
-
-<div class="stat">
-
-<small>Profit</small>
-
-<b id="dProfit">
-0.00
-</b>
-
-</div>
+  </div>
 
 
-<div class="stat">
+  <!-- STATS -->
 
-<small>Terminal MT5</small>
+  <div class="stats">
 
-<b id="dTerminal">
-OFF
-</b>
+    <div class="stat">
+      <small>Balance</small>
+      <b id="dBalance">0.00</b>
+    </div>
 
-</div>
+    <div class="stat">
+      <small>Equity</small>
+      <b id="dEquity">0.00</b>
+    </div>
 
-</div>
+    <div class="stat">
+      <small>Profit</small>
+      <b id="dProfit">0.00</b>
+    </div>
+
+    <div class="stat">
+      <small>Terminal MT5</small>
+      <b id="dTerminal">OFF</b>
+    </div>
+
+  </div>
 
 
-<div class="card">
+  <!-- ROBOT STATUS -->
 
-<h3>
-⚙️ Pengaturan Robot
-</h3>
+  <div class="card">
 
-<div class="account-grid">
+    <div class="account-head">
 
-<div class="item">
-<label>INSTRUMEN</label>
-<strong id="dAsset">-</strong>
-</div>
+      <div>
+        <h3 style="margin:0 0 5px">
+          🤖 Status Robot
+        </h3>
 
-<div class="item">
-<label>STRATEGI</label>
-<strong id="dStrategy">-</strong>
-</div>
+        <span class="muted">
+          Pengaturan dibaca dari Supabase.
+        </span>
+      </div>
 
-<div class="item">
-<label>TIMEFRAME</label>
-<strong id="dTf">-</strong>
-</div>
+      <span class="badge off" id="dashboardRobot">
+        ROBOT OFF
+      </span>
 
-<div class="item">
-<label>LOT</label>
-<strong id="dLot">-</strong>
-</div>
+    </div>
 
-</div>
 
-</div>
+    <div class="account-grid">
+
+      <div class="item">
+        <label>MODE</label>
+        <strong id="dMode">DEMO</strong>
+      </div>
+
+      <div class="item">
+        <label>INSTRUMEN</label>
+        <strong id="dAsset">-</strong>
+      </div>
+
+      <div class="item">
+        <label>TIMEFRAME</label>
+        <strong id="dTf">-</strong>
+      </div>
+
+      <div class="item">
+        <label>STRATEGI</label>
+        <strong id="dStrategy">-</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- XAU BTC -->
+
+  <div class="switch-row">
+
+    <div class="switch-card">
+
+      <div class="switch-info">
+        <strong>🥇 XAUUSD</strong>
+        <span id="dashXauText">OFF</span>
+      </div>
+
+      <label class="switch">
+        <input
+          type="checkbox"
+          id="dashXau"
+          disabled
+        >
+        <span class="slider"></span>
+      </label>
+
+    </div>
+
+
+    <div class="switch-card">
+
+      <div class="switch-info">
+        <strong>₿ BTCUSD</strong>
+        <span id="dashBtcText">OFF</span>
+      </div>
+
+      <label class="switch">
+        <input
+          type="checkbox"
+          id="dashBtc"
+          disabled
+        >
+        <span class="slider"></span>
+      </label>
+
+    </div>
+
+  </div>
 
 </section>
 
 
-<!-- POSITIONS -->
+<!-- ================= POSITIONS ================= -->
 
 <section id="positions" class="page">
 
-<h2>Posisi Terbuka</h2>
+  <h2>Posisi Terbuka</h2>
 
-<div class="card">
+  <div class="card">
 
-<table>
+    <table>
 
-<thead>
+      <thead>
+        <tr>
+          <th>Symbol</th>
+          <th>Type</th>
+          <th>Lot</th>
+          <th>Open</th>
+          <th>Profit</th>
+        </tr>
+      </thead>
 
-<tr>
-<th>Symbol</th>
-<th>Type</th>
-<th>Lot</th>
-<th>Open</th>
-<th>Profit</th>
-</tr>
+      <tbody id="positionsBody">
 
-</thead>
+        <tr>
+          <td colspan="5" class="empty">
+            Belum ada data posisi dari MT5.
+          </td>
+        </tr>
 
-<tbody id="positionsBody">
+      </tbody>
 
-<tr>
+    </table>
 
-<td colspan="5">
-Belum ada data posisi.
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
-
-</div>
+  </div>
 
 </section>
 
 
-<!-- HISTORY -->
+<!-- ================= HISTORY ================= -->
 
 <section id="history" class="page">
 
-<h2>Riwayat Trading</h2>
+  <h2>Riwayat Trading</h2>
 
-<div class="card">
+  <div class="card">
 
-<p class="muted">
-Riwayat transaksi MT5 akan dihubungkan pada tahap berikutnya.
-</p>
+    <p class="muted">
+      Riwayat transaksi MT5 akan dihubungkan oleh EA Bridge.
+    </p>
 
-</div>
+  </div>
 
 </section>
 
 
-<!-- SETTINGS -->
+<!-- ================= SETTINGS ================= -->
 
 <section id="settings" class="page">
 
-<h2>
-Pengaturan Robot
-</h2>
+  <h2>Pengaturan Robot</h2>
 
+  <p class="muted">
+    Pengaturan di halaman ini disimpan ke Supabase dan nantinya dibaca oleh EA MT5.
+  </p>
 
-<div class="card">
 
-<div class="formgrid">
+  <!-- AKUN -->
 
+  <div class="card">
 
-<div class="form">
+    <h3>💼 Akun Trading</h3>
 
-<label>
-ID Akun Trading
-</label>
+    <div class="formgrid">
 
-<input
-id="tradingAccountId"
-placeholder="Nomor akun MT5"
-/>
+      <div class="form">
 
-</div>
+        <label>
+          ID Akun MT5
+        </label>
 
+        <input
+          id="tradingAccountId"
+          placeholder="Contoh: 12345678"
+        >
 
-<div class="form">
+      </div>
 
-<label>
-Server Exness
-</label>
 
-<input
-id="tradingServer"
-placeholder="Server MT5 Exness"
-/>
+      <div class="form">
 
-</div>
+        <label>
+          Server MT5
+        </label>
 
+        <input
+          id="tradingServer"
+          placeholder="Contoh: Exness-MT5Real"
+        >
 
-<div class="form">
+      </div>
 
-<label>
-Mode Akun
-</label>
 
-<select id="modeSelect">
+      <div class="form">
 
-<option>
-DEMO
-</option>
+        <label>
+          Mode Akun
+        </label>
 
-<option>
-LIVE
-</option>
+        <select id="modeSelect">
 
-</select>
+          <option value="DEMO">
+            DEMO
+          </option>
 
-</div>
+          <option value="LIVE">
+            LIVE
+          </option>
 
+        </select>
 
-<div class="form">
+      </div>
 
-<label>
-Instrumen
-</label>
+    </div>
 
-<select id="assetSelect">
+    <div class="info">
+      🔒 Password akun MT5 tidak disimpan di panel ini. Login MT5 tetap dilakukan langsung di aplikasi MetaTrader 5.
+    </div>
 
-<option>
-XAUUSD
-</option>
+  </div>
 
-<option>
-BTCUSD
-</option>
 
-<option>
-XAUUSD,BTCUSD
-</option>
+  <!-- MASTER ROBOT -->
 
-</select>
+  <div class="card" id="robotMasterCard">
 
-</div>
+    <h3>🤖 Kontrol Robot</h3>
 
+    <div class="switch-card robot-master" style="margin-top:15px">
 
-<div class="form">
+      <div class="switch-info">
 
-<label>
-Mode Trading
-</label>
+        <strong>
+          Robot Trading
+        </strong>
 
-<select id="strategySelect">
+        <span id="robotText">
+          Robot dalam keadaan OFF
+        </span>
 
-<option>
-Normal
-</option>
+      </div>
 
-<option>
-Scalping
-</option>
+      <label class="switch">
 
-</select>
+        <input
+          type="checkbox"
+          id="robotOn"
+        >
 
-</div>
+        <span class="slider"></span>
 
+      </label>
 
-<div class="form">
+    </div>
 
-<label>
-Timeframe
-</label>
+  </div>
 
-<select id="timeframeSelect">
 
-<option>M1</option>
-<option selected>M5</option>
-<option>M15</option>
-<option>M30</option>
-<option>H1</option>
+  <!-- SYMBOL -->
 
-</select>
+  <div class="card">
 
-</div>
+    <h3>📈 Instrumen Trading</h3>
 
+    <div class="switch-row">
 
-<div class="form">
+      <div class="switch-card">
 
-<label>
-Maksimal Posisi
-</label>
+        <div class="switch-info">
 
-<input
-id="maxPositions"
-type="number"
-value="3"
-/>
+          <strong>🥇 XAUUSD</strong>
 
-</div>
+          <span>
+            Aktifkan trading emas
+          </span>
 
+        </div>
 
-<div class="form">
+        <label class="switch">
 
-<label>
-Maks Posisi XAU
-</label>
+          <input
+            type="checkbox"
+            id="tradeXau"
+          >
 
-<input
-id="maxGoldPositions"
-type="number"
-value="2"
-/>
+          <span class="slider"></span>
 
-</div>
+        </label>
 
+      </div>
 
-<div class="form">
 
-<label>
-Maks Posisi BTC
-</label>
+      <div class="switch-card">
 
-<input
-id="maxBtcPositions"
-type="number"
-value="2"
-/>
+        <div class="switch-info">
 
-</div>
+          <strong>₿ BTCUSD</strong>
 
+          <span>
+            Aktifkan trading Bitcoin
+          </span>
 
-<div class="form">
+        </div>
 
-<label>
-Lot
-</label>
+        <label class="switch">
 
-<input
-id="lotSize"
-type="number"
-step="0.01"
-value="0.10"
-/>
+          <input
+            type="checkbox"
+            id="tradeBtc"
+          >
 
-</div>
+          <span class="slider"></span>
 
+        </label>
 
-<div class="form">
+      </div>
 
-<label>
-EMA Cepat
-</label>
+    </div>
 
-<input
-id="emaFast"
-type="number"
-value="9"
-/>
+  </div>
 
-</div>
 
+  <!-- TRADING -->
 
-<div class="form">
+  <div class="card">
 
-<label>
-EMA Lambat
-</label>
+    <h3>⚙️ Pengaturan Trading</h3>
 
-<input
-id="emaSlow"
-type="number"
-value="21"
-/>
+    <div class="formgrid">
 
-</div>
 
+      <div class="form">
 
-<div class="form">
+        <label>
+          Strategi
+        </label>
 
-<label>
-RSI Period
-</label>
+        <select id="strategySelect">
 
-<input
-id="rsiPeriod"
-type="number"
-value="14"
-/>
+          <option value="Normal">
+            Normal
+          </option>
 
-</div>
+          <option value="Scalping">
+            Scalping
+          </option>
 
+        </select>
 
-<div class="form">
+      </div>
 
-<label>
-Risk %
-</label>
 
-<input
-id="riskInput"
-type="number"
-step="0.1"
-value="1"
-/>
+      <div class="form">
 
-</div>
+        <label>
+          Timeframe
+        </label>
 
+        <select id="timeframeSelect">
 
-<div class="form">
+          <option value="M1">
+            M1
+          </option>
 
-<label>
-SL ATR
-</label>
+          <option value="M5" selected>
+            M5
+          </option>
 
-<input
-id="slAtr"
-type="number"
-step="0.1"
-value="1.5"
-/>
+          <option value="M15">
+            M15
+          </option>
 
-</div>
+          <option value="M30">
+            M30
+          </option>
 
+          <option value="H1">
+            H1
+          </option>
 
-<div class="form">
+        </select>
 
-<label>
-TP ATR
-</label>
+      </div>
 
-<input
-id="tpAtr"
-type="number"
-step="0.1"
-value="3"
-/>
 
-</div>
+      <div class="form">
 
+        <label>
+          Lot XAUUSD
+        </label>
 
-<div class="form">
+        <input
+          id="lotXau"
+          type="number"
+          step="0.01"
+          min="0.01"
+          value="0.01"
+        >
 
-<label>
-Tampilan
-</label>
+      </div>
 
-<select id="themeSelect">
 
-<option value="dark">
-Mode Gelap
-</option>
+      <div class="form">
 
-<option value="light">
-Mode Terang
-</option>
+        <label>
+          Lot BTCUSD
+        </label>
 
-</select>
+        <input
+          id="lotBtc"
+          type="number"
+          step="0.01"
+          min="0.01"
+          value="0.01"
+        >
 
-</div>
+      </div>
 
 
-</div>
+      <div class="form">
 
+        <label>
+          Maksimal Posisi
+        </label>
 
-<div class="actions">
+        <input
+          id="maxPositions"
+          type="number"
+          min="1"
+          value="1"
+        >
 
-<button
-class="btn"
-onclick="saveSettings()"
->
-💾 Simpan Pengaturan
-</button>
+      </div>
 
 
-<button
-class="btn"
-onclick="loadSettings()"
->
-🔄 Muat Pengaturan
-</button>
+      <div class="form">
 
-</div>
+        <label>
+          Maks Posisi XAU
+        </label>
 
+        <input
+          id="maxGoldPositions"
+          type="number"
+          min="1"
+          value="1"
+        >
 
-<div
-id="saveStatus"
-class="status"
->
-Menyiapkan Supabase...
-</div>
+      </div>
 
-</div>
+
+      <div class="form">
+
+        <label>
+          Maks Posisi BTC
+        </label>
+
+        <input
+          id="maxBtcPositions"
+          type="number"
+          min="1"
+          value="1"
+        >
+
+      </div>
+
+
+      <div class="form">
+
+        <label>
+          EMA Cepat
+        </label>
+
+        <input
+          id="emaFast"
+          type="number"
+          min="1"
+          value="9"
+        >
+
+      </div>
+
+
+      <div class="form">
+
+        <label>
+          EMA Lambat
+        </label>
+
+        <input
+          id="emaSlow"
+          type="number"
+          min="2"
+          value="21"
+        >
+
+      </div>
+
+
+      <div class="form">
+
+        <label>
+          Stop Loss Points
+        </label>
+
+        <input
+          id="stopLossPoints"
+          type="number"
+          min="0"
+          value="1000"
+        >
+
+      </div>
+
+
+      <div class="form">
+
+        <label>
+          Take Profit Points
+        </label>
+
+        <input
+          id="takeProfitPoints"
+          type="number"
+          min="0"
+          value="2000"
+        >
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- TAMPILAN -->
+
+  <div class="card">
+
+    <h3>🎨 Tampilan</h3>
+
+    <div class="formgrid">
+
+      <div class="form">
+
+        <label>
+          Tampilan
+        </label>
+
+        <select id="themeSelect">
+
+          <option value="dark">
+            Mode Gelap
+          </option>
+
+          <option value="light">
+            Mode Terang
+          </option>
+
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="actions">
+
+      <button
+        class="btn"
+        onclick="saveSettings()"
+      >
+        💾 Simpan Pengaturan
+      </button>
+
+
+      <button
+        class="btn blue"
+        onclick="loadSettings()"
+      >
+        🔄 Muat Pengaturan
+      </button>
+
+    </div>
+
+
+    <div
+      id="saveStatus"
+      class="status"
+    >
+      Menyiapkan koneksi Supabase...
+    </div>
+
+  </div>
 
 </section>
 
@@ -942,6 +1253,10 @@ Menyiapkan Supabase...
 
 <script>
 
+/* =========================================================
+   SUPABASE
+========================================================= */
+
 const SUPABASE_URL =
 "https://dicimwikcxjdzemcxqex.supabase.co";
 
@@ -950,446 +1265,772 @@ const SUPABASE_KEY =
 
 const db =
 window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
 
 
+/* =========================================================
+   HELPER
+========================================================= */
+
 function $(id){
-
-return document.getElementById(id);
-
+  return document.getElementById(id);
 }
 
 
 function val(id){
-
-return $(id)?.value || "";
-
+  return $(id)?.value ?? "";
 }
 
 
 function setv(id,value){
 
-if($(id) && value !== null && value !== undefined){
+  if($(id) && value !== null && value !== undefined){
 
-$(id).value = value;
+    $(id).value = value;
+
+  }
 
 }
 
+
+function checked(id){
+
+  return $(id)?.checked || false;
+
 }
 
+
+function setChecked(id,value){
+
+  if($(id)){
+
+    $(id).checked = Boolean(value);
+
+  }
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
 function page(id,button){
 
-document
-.querySelectorAll(".page")
-.forEach(x =>
-x.classList.remove("active")
-);
+  document
+    .querySelectorAll(".page")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
 
-$(id).classList.add("active");
-
-
-document
-.querySelectorAll(".nav")
-.forEach(x =>
-x.classList.remove("active")
-);
-
-button.classList.add("active");
+  $(id).classList.add("active");
 
 
-const titles={
+  document
+    .querySelectorAll(".nav")
+    .forEach(x =>
+      x.classList.remove("active")
+    );
 
-dashboard:"Dashboard Utama",
+  button.classList.add("active");
 
-positions:"Posisi Terbuka",
 
-history:"Riwayat Trading",
+  const titles = {
 
-settings:"Pengaturan Robot"
+    dashboard:"Dashboard Utama",
 
-};
+    positions:"Posisi Terbuka",
 
-$("title").textContent =
-titles[id];
+    history:"Riwayat Trading",
+
+    settings:"Pengaturan Robot"
+
+  };
+
+
+  $("title").textContent =
+    titles[id];
 
 }
 
+
+/* =========================================================
+   THEME
+========================================================= */
 
 function theme(){
 
-document.body.classList.toggle(
-"light",
-val("themeSelect") === "light"
-);
+  document.body.classList.toggle(
+    "light",
+    val("themeSelect") === "light"
+  );
 
 }
 
 
-function updateConfigPanel(){
+/* =========================================================
+   ROBOT VISUAL
+========================================================= */
 
-$("dAsset").textContent =
-val("assetSelect") || "-";
+function updateRobotVisual(){
 
-$("dStrategy").textContent =
-val("strategySelect") || "-";
+  const on =
+    checked("robotOn");
 
-$("dTf").textContent =
-val("timeframeSelect") || "-";
 
-$("dLot").textContent =
-val("lotSize") || "-";
+  const card =
+    $("robotMasterCard");
 
-$("sideMode").textContent =
-(val("modeSelect") || "DEMO") +
-" MODE";
+
+  if(on){
+
+    $("robotText").textContent =
+      "Robot dalam keadaan ON";
+
+    card.classList.remove("off");
+
+  }else{
+
+    $("robotText").textContent =
+      "Robot dalam keadaan OFF";
+
+    card.classList.add("off");
+
+  }
 
 }
 
+
+function updateDashboardSettings(){
+
+  const xau =
+    checked("tradeXau");
+
+  const btc =
+    checked("tradeBtc");
+
+  const robot =
+    checked("robotOn");
+
+
+  $("dMode").textContent =
+    val("modeSelect") || "DEMO";
+
+
+  $("dTf").textContent =
+    val("timeframeSelect") || "M5";
+
+
+  $("dStrategy").textContent =
+    val("strategySelect") || "Normal";
+
+
+  const assets=[];
+
+  if(xau)
+    assets.push("XAUUSD");
+
+  if(btc)
+    assets.push("BTCUSD");
+
+
+  $("dAsset").textContent =
+    assets.length
+      ? assets.join(", ")
+      : "Tidak ada";
+
+
+  $("dashXau").checked =
+    xau;
+
+  $("dashBtc").checked =
+    btc;
+
+
+  $("dashXauText").textContent =
+    xau ? "AKTIF" : "OFF";
+
+  $("dashBtcText").textContent =
+    btc ? "AKTIF" : "OFF";
+
+
+  const badge =
+    $("dashboardRobot");
+
+
+  badge.textContent =
+    robot
+      ? "ROBOT ON"
+      : "ROBOT OFF";
+
+
+  badge.className =
+    robot
+      ? "badge"
+      : "badge off";
+
+
+  $("sideMode").textContent =
+    (val("modeSelect") || "DEMO") +
+    " MODE";
+
+
+  $("robotState").textContent =
+    robot
+      ? "● Robot ON"
+      : "● Robot OFF";
+
+}
+
+
+function updateAllVisual(){
+
+  theme();
+
+  updateRobotVisual();
+
+  updateDashboardSettings();
+
+}
+
+
+/* =========================================================
+   BUILD PAYLOAD
+========================================================= */
+
+function getPayload(){
+
+  return {
+
+    trading_account_id:
+      val("tradingAccountId").trim(),
+
+    trading_server:
+      val("tradingServer").trim(),
+
+    mode:
+      val("modeSelect") || "DEMO",
+
+    robot_on:
+      checked("robotOn"),
+
+    trade_xau:
+      checked("tradeXau"),
+
+    trade_btc:
+      checked("tradeBtc"),
+
+    asset:
+      (
+        checked("tradeXau")
+          ? "XAUUSD"
+          : ""
+      ) +
+      (
+        checked("tradeXau") &&
+        checked("tradeBtc")
+          ? ","
+          : ""
+      ) +
+      (
+        checked("tradeBtc")
+          ? "BTCUSD"
+          : ""
+      ),
+
+    strategy:
+      val("strategySelect") || "Normal",
+
+    timeframe:
+      val("timeframeSelect") || "M5",
+
+    max_positions:
+      Number(val("maxPositions")) || 1,
+
+    max_gold_positions:
+      Number(val("maxGoldPositions")) || 1,
+
+    max_btc_positions:
+      Number(val("maxBtcPositions")) || 1,
+
+    lot_xau:
+      Number(val("lotXau")) || 0.01,
+
+    lot_btc:
+      Number(val("lotBtc")) || 0.01,
+
+    ema_fast:
+      Number(val("emaFast")) || 9,
+
+    ema_slow:
+      Number(val("emaSlow")) || 21,
+
+    stop_loss_points:
+      Number(val("stopLossPoints")) || 0,
+
+    take_profit_points:
+      Number(val("takeProfitPoints")) || 0,
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+}
+
+
+/* =========================================================
+   LOAD SETTINGS
+========================================================= */
 
 async function loadSettings(){
 
-const r =
-await db
-.from("robot_settings")
-.select("*")
-.order("updated_at",{ascending:false})
-.limit(1);
+  $("saveStatus").textContent =
+    "Membaca pengaturan...";
 
 
-if(r.error){
+  const r =
+    await db
+      .from("robot_settings")
+      .select("*")
+      .order(
+        "updated_at",
+        {ascending:false}
+      )
+      .limit(1);
 
-$("saveStatus").textContent =
-"Gagal: " + r.error.message;
 
-$("saveStatus").className =
-"status err";
+  if(r.error){
 
-return;
+    $("saveStatus").textContent =
+      "Gagal membaca pengaturan: " +
+      r.error.message;
+
+    $("saveStatus").className =
+      "status err";
+
+    return;
+
+  }
+
+
+  if(!r.data || !r.data.length){
+
+    $("saveStatus").textContent =
+      "Belum ada pengaturan tersimpan.";
+
+    $("saveStatus").className =
+      "status warn";
+
+    updateAllVisual();
+
+    return;
+
+  }
+
+
+  const x =
+    r.data[0];
+
+
+  setv(
+    "tradingAccountId",
+    x.trading_account_id
+  );
+
+
+  setv(
+    "tradingServer",
+    x.trading_server
+  );
+
+
+  setv(
+    "modeSelect",
+    x.mode || "DEMO"
+  );
+
+
+  setChecked(
+    "robotOn",
+    x.robot_on
+  );
+
+
+  setChecked(
+    "tradeXau",
+    x.trade_xau
+  );
+
+
+  setChecked(
+    "tradeBtc",
+    x.trade_btc
+  );
+
+
+  setv(
+    "strategySelect",
+    x.strategy || "Normal"
+  );
+
+
+  setv(
+    "timeframeSelect",
+    x.timeframe || "M5"
+  );
+
+
+  setv(
+    "maxPositions",
+    x.max_positions ?? 1
+  );
+
+
+  setv(
+    "maxGoldPositions",
+    x.max_gold_positions ?? 1
+  );
+
+
+  setv(
+    "maxBtcPositions",
+    x.max_btc_positions ?? 1
+  );
+
+
+  setv(
+    "lotXau",
+    x.lot_xau ?? 0.01
+  );
+
+
+  setv(
+    "lotBtc",
+    x.lot_btc ?? 0.01
+  );
+
+
+  setv(
+    "emaFast",
+    x.ema_fast ?? 9
+  );
+
+
+  setv(
+    "emaSlow",
+    x.ema_slow ?? 21
+  );
+
+
+  setv(
+    "stopLossPoints",
+    x.stop_loss_points ?? 1000
+  );
+
+
+  setv(
+    "takeProfitPoints",
+    x.take_profit_points ?? 2000
+  );
+
+
+  updateAllVisual();
+
+
+  $("saveStatus").textContent =
+    "✓ Pengaturan berhasil dimuat.";
+
+  $("saveStatus").className =
+    "status ok";
 
 }
 
 
-if(!r.data || !r.data.length){
-
-$("saveStatus").textContent =
-"Belum ada pengaturan tersimpan.";
-
-return;
-
-}
-
-
-const x =
-r.data[0];
-
-
-[
-"tradingAccountId",
-"tradingServer",
-"modeSelect",
-"assetSelect",
-"strategySelect",
-"timeframeSelect",
-"maxPositions",
-"maxGoldPositions",
-"maxBtcPositions",
-"lotSize",
-"emaFast",
-"emaSlow",
-"rsiPeriod",
-"riskInput",
-"slAtr",
-"tpAtr",
-"themeSelect"
-
-].forEach(k =>
-setv(k,x[k])
-);
-
-
-theme();
-
-updateConfigPanel();
-
-
-$("saveStatus").textContent =
-"✓ Pengaturan berhasil dimuat.";
-
-$("saveStatus").className =
-"status ok";
-
-}
-
+/* =========================================================
+   SAVE SETTINGS
+========================================================= */
 
 async function saveSettings(){
 
-const payload={
-
-tradingAccountId:
-val("tradingAccountId"),
-
-tradingServer:
-val("tradingServer"),
-
-modeSelect:
-val("modeSelect"),
-
-assetSelect:
-val("assetSelect"),
-
-strategySelect:
-val("strategySelect"),
-
-timeframeSelect:
-val("timeframeSelect"),
-
-maxPositions:
-Number(val("maxPositions")),
-
-maxGoldPositions:
-Number(val("maxGoldPositions")),
-
-maxBtcPositions:
-Number(val("maxBtcPositions")),
-
-lotSize:
-Number(val("lotSize")),
-
-emaFast:
-Number(val("emaFast")),
-
-emaSlow:
-Number(val("emaSlow")),
-
-rsiPeriod:
-Number(val("rsiPeriod")),
-
-riskInput:
-Number(val("riskInput")),
-
-slAtr:
-Number(val("slAtr")),
-
-tpAtr:
-Number(val("tpAtr")),
-
-themeSelect:
-val("themeSelect")
-
-};
+  const payload =
+    getPayload();
 
 
-const q =
-await db
-.from("robot_settings")
-.select("id")
-.order("updated_at",{ascending:false})
-.limit(1);
+  $("saveStatus").textContent =
+    "Menyimpan pengaturan...";
+
+  $("saveStatus").className =
+    "status";
 
 
-let r;
+  /*
+    Ambil record terakhir.
+    Kalau ada → UPDATE.
+    Kalau belum ada → INSERT.
+  */
+
+  const q =
+    await db
+      .from("robot_settings")
+      .select("id")
+      .order(
+        "updated_at",
+        {ascending:false}
+      )
+      .limit(1);
 
 
-if(q.data && q.data.length){
+  if(q.error){
 
-r =
-await db
-.from("robot_settings")
-.update(payload)
-.eq("id",q.data[0].id);
+    $("saveStatus").textContent =
+      "Gagal mencari pengaturan: " +
+      q.error.message;
 
-}else{
+    $("saveStatus").className =
+      "status err";
 
-r =
-await db
-.from("robot_settings")
-.insert(payload);
+    return;
 
-}
+  }
 
 
-if(r.error){
+  let r;
 
-$("saveStatus").textContent =
-"Gagal: " + r.error.message;
 
-$("saveStatus").className =
-"status err";
+  if(q.data && q.data.length){
 
-return;
+    r =
+      await db
+        .from("robot_settings")
+        .update(payload)
+        .eq(
+          "id",
+          q.data[0].id
+        );
+
+  }else{
+
+    r =
+      await db
+        .from("robot_settings")
+        .insert(payload);
+
+  }
+
+
+  if(r.error){
+
+    $("saveStatus").textContent =
+      "Gagal menyimpan: " +
+      r.error.message;
+
+    $("saveStatus").className =
+      "status err";
+
+    return;
+
+  }
+
+
+  updateAllVisual();
+
+
+  $("saveStatus").textContent =
+    "✓ Pengaturan berhasil disimpan ke Supabase.";
+
+  $("saveStatus").className =
+    "status ok";
 
 }
 
 
-theme();
-
-updateConfigPanel();
-
-
-$("saveStatus").textContent =
-"✓ Pengaturan tersimpan ke Supabase.";
-
-$("saveStatus").className =
-"status ok";
-
-}
-
+/* =========================================================
+   MT5 ACCOUNT STATUS
+========================================================= */
 
 async function loadAccountStatus(){
 
-const r =
-await db
-.from("mt5_account_status")
-.select("*")
-.order("last_seen",{ascending:false})
-.limit(1);
+  const r =
+    await db
+      .from("mt5_account_status")
+      .select("*")
+      .order(
+        "last_seen",
+        {ascending:false}
+      )
+      .limit(1);
 
 
-if(r.error){
+  if(r.error){
 
-$("lastSeen").textContent =
-"Gagal membaca status MT5";
+    $("lastSeen").textContent =
+      "Gagal membaca status MT5";
 
-return;
+    return;
+
+  }
+
+
+  if(!r.data || !r.data.length){
+
+    $("lastSeen").textContent =
+      "Belum ada data dari EA MT5";
+
+    $("connBadge").textContent =
+      "BELUM TERHUBUNG";
+
+    $("connBadge").className =
+      "badge off";
+
+    return;
+
+  }
+
+
+  const x =
+    r.data[0];
+
+
+  $("dLogin").textContent =
+    x.account_login || "-";
+
+
+  $("dServer").textContent =
+    x.server || "-";
+
+
+  $("dCurrency").textContent =
+    x.currency || "-";
+
+
+  $("dTrade").textContent =
+    x.trade_allowed
+      ? "YA"
+      : "TIDAK";
+
+
+  $("dBalance").textContent =
+    Number(x.balance || 0).toFixed(2)
+    + " "
+    + (x.currency || "");
+
+
+  $("dEquity").textContent =
+    Number(x.equity || 0).toFixed(2)
+    + " "
+    + (x.currency || "");
+
+
+  $("dProfit").textContent =
+    Number(x.profit || 0).toFixed(2)
+    + " "
+    + (x.currency || "");
+
+
+  $("dTerminal").textContent =
+    x.terminal_connected
+      ? "ON"
+      : "OFF";
+
+
+  const last =
+    new Date(
+      x.last_seen || Date.now()
+    );
+
+
+  const age =
+    Date.now() -
+    last.getTime();
+
+
+  const online =
+    x.terminal_connected &&
+    age < 30000;
+
+
+  $("connBadge").textContent =
+    online
+      ? "TERHUBUNG"
+      : "TERPUTUS";
+
+
+  $("connBadge").className =
+    online
+      ? "badge"
+      : "badge off";
+
+
+  $("lastSeen").textContent =
+    "Terakhir terlihat: " +
+    last.toLocaleString("id-ID");
+
+
+  /*
+    Status header tetap menunjukkan
+    apakah MT5 terhubung.
+  */
+
+  $("robotState").textContent =
+    online
+      ? "● MT5 Terhubung"
+      : "● MT5 Belum Terhubung";
 
 }
 
 
-if(!r.data || !r.data.length){
-
-$("lastSeen").textContent =
-"Belum ada data dari EA MT5";
-
-return;
-
-}
-
-
-const x =
-r.data[0];
-
-
-$("dLogin").textContent =
-x.account_login || "-";
-
-
-$("dServer").textContent =
-x.server || "-";
-
-
-$("dCurrency").textContent =
-x.currency || "-";
-
-
-$("dTrade").textContent =
-x.trade_allowed
-? "YA"
-: "TIDAK";
-
-
-$("dBalance").textContent =
-Number(x.balance || 0)
-.toFixed(2)
-+ " "
-+ (x.currency || "");
-
-
-$("dEquity").textContent =
-Number(x.equity || 0)
-.toFixed(2)
-+ " "
-+ (x.currency || "");
-
-
-$("dProfit").textContent =
-Number(x.profit || 0)
-.toFixed(2)
-+ " "
-+ (x.currency || "");
-
-
-$("dTerminal").textContent =
-x.terminal_connected
-? "ON"
-: "OFF";
-
-
-const last =
-new Date(
-x.last_seen || x.updated_at
-);
-
-
-const age =
-Date.now() -
-last.getTime();
-
-
-const online =
-x.terminal_connected &&
-age < 30000;
-
-
-$("connBadge").textContent =
-online
-? "TERHUBUNG"
-: "TERPUTUS";
-
-
-$("connBadge").className =
-"badge" +
-(online ? "" : " off");
-
-
-$("robotState").textContent =
-online
-? "● MT5 Terhubung"
-: "● MT5 Belum Terhubung";
-
-
-$("lastSeen").textContent =
-"Terakhir terlihat: " +
-last.toLocaleString("id-ID");
-
-}
-
+/* =========================================================
+   EVENT
+========================================================= */
 
 $("themeSelect")
-.addEventListener(
-"change",
-theme
-);
+  .addEventListener(
+    "change",
+    theme
+  );
 
 
 [
-"modeSelect",
-"assetSelect",
-"strategySelect",
-"timeframeSelect",
-"lotSize"
+  "robotOn",
+  "tradeXau",
+  "tradeBtc",
+  "modeSelect",
+  "assetSelect",
+  "strategySelect",
+  "timeframeSelect",
+  "lotXau",
+  "lotBtc"
+]
+.forEach(id => {
 
-].forEach(id => {
+  if($(id)){
 
-$(id).addEventListener(
-"change",
-updateConfigPanel
-);
+    $(id).addEventListener(
+      "change",
+      updateAllVisual
+    );
+
+  }
 
 });
 
 
+/* =========================================================
+   INIT
+========================================================= */
+
 async function init(){
 
-theme();
+  theme();
 
-await loadSettings();
+  await loadSettings();
 
-updateConfigPanel();
+  updateAllVisual();
 
-await loadAccountStatus();
+  await loadAccountStatus();
 
 }
 
@@ -1397,9 +2038,13 @@ await loadAccountStatus();
 init();
 
 
+/*
+  Cek status MT5 setiap 5 detik.
+*/
+
 setInterval(
-loadAccountStatus,
-5000
+  loadAccountStatus,
+  5000
 );
 
 </script>
